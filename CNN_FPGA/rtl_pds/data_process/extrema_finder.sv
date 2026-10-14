@@ -4,6 +4,7 @@ module extrema_finder #(
     parameter int unsigned PE_COL_NUM       = 4,
     parameter int unsigned CYCLE_PERIOD_OUT = 4,
     parameter int unsigned CHANNEL_OUT_NUM  = CYCLE_PERIOD_OUT * PE_COL_NUM,
+    parameter int unsigned VALID_CHANNEL_NUM = CHANNEL_OUT_NUM,
     parameter bit unsigned CONV_POSITIVE    = 1 // 1: 找最大值 (正相关), 0: 找最小值 (负相关)
 )(
     input  logic                            clk,
@@ -18,7 +19,10 @@ module extrema_finder #(
     output logic                            val_valid            /* synthesis syn_preserve=1 */
 );
 
-    logic [$clog2(CYCLE_PERIOD_OUT)-1:0] cycle_cnt               /* synthesis syn_preserve=1 */;
+    localparam CYCLE_WIDTH = (CYCLE_PERIOD_OUT > 1) ? $clog2(CYCLE_PERIOD_OUT) : 1;
+    localparam PE_INDEX_WIDTH = (PE_COL_NUM > 1) ? $clog2(PE_COL_NUM) : 1;
+    localparam [CYCLE_WIDTH-1:0] LAST_CYCLE = CYCLE_PERIOD_OUT - 1;
+    logic [CYCLE_WIDTH-1:0] cycle_cnt;
     
     // 值缓存
     logic signed [DATA_WIDTH-1:0]        current_best            /* synthesis syn_preserve=1 */;
@@ -29,7 +33,7 @@ module extrema_finder #(
     localparam int CHANNEL_IDX_WIDTH = $clog2(CHANNEL_OUT_NUM);
     
     logic [CHANNEL_IDX_WIDTH-1:0]        current_best_channel    /* synthesis syn_preserve=1 */;
-    logic [$clog2(PE_COL_NUM)-1:0]       cycle_best_pe_idx       /* synthesis syn_keep=1 */; // 当前周期内哪个PE最优
+    logic [PE_INDEX_WIDTH-1:0] cycle_best_pe_idx;
     logic [CHANNEL_IDX_WIDTH-1:0]        current_cycle_global_idx /* synthesis syn_keep=1 */;
 
     // 初始极值定义
@@ -45,19 +49,23 @@ module extrema_finder #(
 
     int i;
     always_comb begin
-        cycle_best = $signed(data_in[0]);
+        // Mask padding BEFORE argmax; dropping an invalid winner afterwards
+        // would also discard the best real character at this time step.
+        cycle_best = INIT_VAL;
         cycle_best_pe_idx = 0;
         
-        for (i = 1; i < PE_COL_NUM; i++) begin
-            if (CONV_POSITIVE) begin
-                if ($signed(data_in[i]) > cycle_best) begin
-                    cycle_best = data_in[i];
-                    cycle_best_pe_idx = i;
-                end
-            end else begin
-                if ($signed(data_in[i]) < cycle_best) begin
-                    cycle_best = $signed(data_in[i]);
-                    cycle_best_pe_idx = i;
+        for (i = 0; i < PE_COL_NUM; i++) begin
+            if ((cycle_cnt + i * CYCLE_PERIOD_OUT) < VALID_CHANNEL_NUM) begin
+                if (CONV_POSITIVE) begin
+                    if ($signed(data_in[i]) > cycle_best) begin
+                        cycle_best = $signed(data_in[i]);
+                        cycle_best_pe_idx = i[PE_INDEX_WIDTH-1:0];
+                    end
+                end else begin
+                    if ($signed(data_in[i]) < cycle_best) begin
+                        cycle_best = $signed(data_in[i]);
+                        cycle_best_pe_idx = i[PE_INDEX_WIDTH-1:0];
+                    end
                 end
             end
         end
@@ -107,13 +115,13 @@ module extrema_finder #(
                     end
     
                     // --- 计数器与最终输出逻辑 ---
-                    if (cycle_cnt == CYCLE_PERIOD_OUT - 1) begin
+                    if (cycle_cnt == LAST_CYCLE) begin
                         cycle_cnt <= 0;
                         val_valid <= 1;
                         
                         // 最后一拍需要比较 "历史累积值" vs "当前周期值"
                         if (CONV_POSITIVE) begin
-                            if (cycle_best > current_best) begin
+                            if ((CYCLE_PERIOD_OUT == 1) || (cycle_best > current_best)) begin
                                 val_out         <= cycle_best;
                                 val_out_channel <= current_cycle_global_idx;
                             end else begin
@@ -121,7 +129,7 @@ module extrema_finder #(
                                 val_out_channel <= current_best_channel;
                             end
                         end else begin
-                            if (cycle_best < current_best) begin
+                            if ((CYCLE_PERIOD_OUT == 1) || (cycle_best < current_best)) begin
                                 val_out         <= cycle_best;
                                 val_out_channel <= current_cycle_global_idx;
                             end else begin

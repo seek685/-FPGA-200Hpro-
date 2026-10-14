@@ -17,7 +17,13 @@ module hdmi_loop #(
     
     // 网络配置及 OSD 相关参数
     parameter   LUT_FILE   = "mem_data/sigmoid_lut_9bit_to_8bit_h.mem",
-    parameter   CHARS_FILE = "../data_process/mem_data/chars_16x16.mem"
+    parameter   CHARS_FILE = "../data_process/mem_data/chars_16x16.mem",
+    parameter   YOLO_CONF_THRESH = 8'h60, // Bring-up starting point; previously 0x40
+    parameter   NMS_IOU_THRESH = 128,     // IoU in units of 1/256
+    parameter   OSD_MIN_CHARS = 7,
+    parameter   OSD_MAX_CHARS = 8,
+    parameter   OSD_CONFIRM_RESULTS = 2,
+    parameter   OSD_HOLD_FRAMES = 6
 )(
     input  wire       sys_clk       , // 200Pro+ system clock 27MHz
     input  wire       rst_n         ,  
@@ -70,7 +76,6 @@ module hdmi_loop #(
     // =========================================================
     localparam bit CONV_POSITIVE = 1;
     localparam int CONF_WIDTH    = 8;
-    localparam int CONF_THRESH   = 8'h40; // 阈值可调
     localparam int CROP_HEIGHT   = IMG_ROW_LAYER20;
     localparam int CROP_WIDTH    = IMG_COL_LAYER20;
     localparam int MAX_BOX_NUM   = 6;
@@ -182,6 +187,7 @@ module hdmi_loop #(
     logic [LPRNET_OUT_WIDTH-1:0] lprnet_out_char/*synthesis PAP_MARK_DEBUG="1"*/;
     logic                        lprnet_out_valid/*synthesis PAP_MARK_DEBUG="1"*/;
     logic                        lprnet_frame_start/*synthesis PAP_MARK_DEBUG="1"*/;
+    logic                        lprnet_frame_end;
     logic                        char_seen_latch/*synthesis PAP_MARK_DEBUG="1"*/;
 
 
@@ -194,7 +200,7 @@ module hdmi_loop #(
     always_ff @(posedge clk_pe or negedge rstn_out) begin
         if (!rstn_out) begin
             char_seen_latch <= 1'b0;
-        end else if (lprnet_frame_start || lprnet_out_valid) begin
+        end else if (lprnet_out_valid) begin
             char_seen_latch <= 1'b1;
         end
     end
@@ -367,7 +373,7 @@ module hdmi_loop #(
         .LUT_FILE(LUT_FILE),
         .CONV_POSITIVE(CONV_POSITIVE),
         .CONF_WIDTH(CONF_WIDTH),
-        .CONF_THRESH(CONF_THRESH)
+        .CONF_THRESH(YOLO_CONF_THRESH)
     ) u_top_yolo (
         .clk                  (clk_pe),
         .clk_en               (1'b1), 
@@ -460,6 +466,7 @@ module hdmi_loop #(
         .GRID_STRIDE_CENTER(16),
         .GRID_STRIDE_LTRB(2),  // 模型更改后，LTBR的scale变了
         .LINE_WIDTH(4),
+        .NMS_IOU_NUM(NMS_IOU_THRESH),
         .MAX_BOX_NUM(MAX_BOX_NUM)
     ) u_box_overlay_sync (
         .clk_video   (pixclk_out),
@@ -543,7 +550,8 @@ module hdmi_loop #(
         
         .out_char        (lprnet_out_char),
         .out_valid       (lprnet_out_valid),
-        .frame_start_out (lprnet_frame_start)
+        .frame_start_out (lprnet_frame_start),
+        .frame_end_out   (lprnet_frame_end)
     );
 
 
@@ -553,10 +561,17 @@ module hdmi_loop #(
     char_overlay #(
         .CROP_HEIGHT(CROP_HEIGHT),
         .CHAR_NUM(76),
+        .IMG_WIDTH(IMG_COL_LAYER0),
+        .IMG_HEIGHT(IMG_ROW_LAYER0),
+        .MAX_PLATES(MAX_BOX_NUM),
+        .MIN_PLATE_CHARS(OSD_MIN_CHARS),
+        .MAX_PLATE_CHARS(OSD_MAX_CHARS),
+        .CONFIRM_RESULTS(OSD_CONFIRM_RESULTS),
+        .HOLD_FRAMES(OSD_HOLD_FRAMES),
         .FONT_FILE(CHARS_FILE)
     ) u_char_overlay (
         .clk_video   (pixclk_out),
-        .rst_n_video (rst_n), 
+        .rst_n_video (rst_n_app_video),
         
         // 接收已画框的视频源流
         .video_vs_in (video_vs_mid),
@@ -579,7 +594,8 @@ module hdmi_loop #(
         
         .out_char    (lprnet_out_char),
         .out_valid   (lprnet_out_valid),
-        .frame_start_out(lprnet_frame_start)
+        .frame_start_out(lprnet_frame_start),
+        .frame_end_out(lprnet_frame_end)
     );
 
 

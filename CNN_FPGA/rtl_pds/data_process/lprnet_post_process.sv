@@ -27,7 +27,8 @@ module lprnet_post_process #(
     // 最终 CTC 解码输出
     output logic [$clog2(CYCLE_PERIOD_OUT * PE_COL_NUM)-1:0] out_char         /* synthesis syn_preserve=1 */,
     output logic                                out_valid                     /* synthesis syn_preserve=1 */,
-    output logic                                frame_start_out               /* synthesis syn_preserve=1 */ // 提前 out_valid 一个周期
+    output logic                                frame_start_out, // Every crop, including all-blank crops
+    output logic                                frame_end_out    // One cycle after the last possible character
 );
 
     localparam int unsigned CHANNEL_OUT_NUM = CYCLE_PERIOD_OUT * PE_COL_NUM;
@@ -76,6 +77,7 @@ module lprnet_post_process #(
         .PE_COL_NUM(PE_COL_NUM),
         .CYCLE_PERIOD_OUT(CYCLE_PERIOD_OUT),
         .CHANNEL_OUT_NUM(CHANNEL_OUT_NUM),
+        .VALID_CHANNEL_NUM(VALID_CHAR_LIMIT),
         .CONV_POSITIVE(CONV_POSITIVE)
     ) u_extrema_finder (
         .clk(clk),
@@ -91,90 +93,53 @@ module lprnet_post_process #(
     );
 
 
-    // =============================================================
-    // 3. CTC 前向编码与流水线输出 (Greedy Decoder)
-    // =============================================================
-    logic                new_frame_flag                        /* synthesis syn_preserve=1 */;
-    logic                frame_started_ctc                     /* synthesis syn_preserve=1 */;
-    logic [CH_WIDTH-1:0] prefix_char                           /* synthesis syn_preserve=1 */;
-    
-    // 用于打拍分离 frame_start_out 和 out_valid 的中间寄存器
-    logic                ctc_match_reg                         /* synthesis syn_preserve=1 */;
-    logic [CH_WIDTH-1:0] ctc_char_reg                          /* synthesis syn_preserve=1 */;
+    // A crop boundary must not depend on whether CTC emits a character.
+    // Coordinates are consumed once per crop, including blank/flush crops.
+    localparam int TIME_WIDTH = (IMG_COL > 1) ? $clog2(IMG_COL) : 1;
+    localparam [TIME_WIDTH-1:0] LAST_TIME_STEP = IMG_COL - 1;
+    logic new_frame_flag;
+    logic [TIME_WIDTH-1:0] time_step;
+    logic [CH_WIDTH-1:0] prefix_char;
+    logic ctc_match_reg;
+    logic [CH_WIDTH-1:0] ctc_char_reg;
+    logic last_s1, last_s2;
+    wire ctc_match = ef_val_valid && (ef_val_out_channel < VALID_CHAR_LIMIT) &&
+                     (ef_val_out_channel != BLANK_CHAR_CH) &&
+                     (new_frame_flag || (ef_val_out_channel != prefix_char));
 
-    // 捕获新一帧的起始标志
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             new_frame_flag <= 1'b0;
+            time_step      <= '0;
+            prefix_char    <= BLANK_CHAR_CH;
+            ctc_match_reg  <= 1'b0;
+            ctc_char_reg   <= '0;
+            last_s1        <= 1'b0;
+            last_s2        <= 1'b0;
+            out_valid      <= 1'b0;
+            out_char       <= '0;
+            frame_start_out <= 1'b0;
+            frame_end_out   <= 1'b0;
         end else if (clk_en) begin
+            frame_start_out <= 1'b0;
             if (ss_new_line_out_1) begin
                 new_frame_flag <= 1'b1;
-            end else if (ef_val_valid) begin
-                // 当收到 Extrema Finder 吐出的第一个结果时，清除挂起的标志
-                new_frame_flag <= 1'b0; 
+                time_step <= '0;
             end
-        end
-    end
-
-    // CTC 判定组合逻辑
-    logic ctc_match                                             /* synthesis syn_keep=1 */;
-    logic ef_val_in_valid_range                                 /* synthesis syn_keep=1 */;
-    assign ef_val_in_valid_range = (ef_val_out_channel < VALID_CHAR_LIMIT);
-    assign ctc_match = ef_val_valid && 
-                       ef_val_in_valid_range &&
-                       (ef_val_out_channel != BLANK_CHAR_CH) && 
-                       (new_frame_flag || (ef_val_out_channel != prefix_char));
-
-    // CTC 状态更新与流水线延迟
-    always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            prefix_char       <= BLANK_CHAR_CH;
-            frame_started_ctc <= 1'b0;
-            frame_start_out   <= 1'b0;
-            ctc_match_reg     <= 1'b0;
-            ctc_char_reg      <= '0;
-            out_valid         <= 1'b0;
-            out_char          <= '0;
-        end else if (clk_en) begin
-            
-            // --- 默认拉低脉冲 ---
-            frame_start_out <= 1'b0;
-
             if (ef_val_valid) begin
-                if (new_frame_flag) begin
-                    // ---- 当前帧的第一个通道数据 ----
-                    if (ctc_match) begin
-                        prefix_char       <= ef_val_out_channel;
-                        frame_started_ctc <= 1'b1;
-                        frame_start_out   <= 1'b1; // 发出帧起点脉冲
-                    end else begin
-                        prefix_char       <= BLANK_CHAR_CH; // 隐式复位
-                        frame_started_ctc <= 1'b0;
-                    end
-                end else begin
-                    // ---- 当前帧的后续数据 ----
-                    if(ef_val_valid) begin
-                        prefix_char <= ef_val_out_channel;
-                    end
-                    if (ctc_match) begin
-                        // 如果这是该帧中第一次成功匹配，发出脉冲
-                        if (!frame_started_ctc) begin
-                            frame_start_out   <= 1'b1;
-                            frame_started_ctc <= 1'b1;
-                        end
-                    end
-                end
+                frame_start_out <= new_frame_flag;
+                new_frame_flag <= 1'b0;
+                prefix_char <= ef_val_out_channel;
+                if (time_step == LAST_TIME_STEP) time_step <= '0;
+                else                          time_step <= time_step + 1'b1;
             end
-            
-            // --- Stage 1: 延迟 CTC 结果 ---
             ctc_match_reg <= ctc_match;
             ctc_char_reg  <= ef_val_out_channel;
-
-            // --- Stage 2: 最终输出 (比 frame_start_out 晚一拍) ---
-            out_valid <= ctc_match_reg;
-            out_char  <= ctc_char_reg;
-
+            out_valid     <= ctc_match_reg;
+            out_char      <= ctc_char_reg;
+            last_s1       <= ef_val_valid && (time_step == LAST_TIME_STEP);
+            last_s2       <= last_s1;
+            frame_end_out <= last_s2;
         end
     end
-
 endmodule

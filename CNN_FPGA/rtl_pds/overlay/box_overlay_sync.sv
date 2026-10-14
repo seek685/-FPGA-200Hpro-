@@ -4,6 +4,9 @@ module box_overlay_sync #(
     parameter int GRID_STRIDE_CENTER = 16,     // 中心点网格步长 (下采样率)
     parameter int GRID_STRIDE_LTRB   = 1,      // 边框相对偏移步长
     parameter int LINE_WIDTH         = 4,      // 画框的线宽(像素)
+    parameter int NMS_IOU_NUM        = 128,    // IoU threshold = 128 / 256
+    parameter int NMS_IOU_DEN        = 256,
+    parameter int CLASS_NUM          = 5,
     parameter int MAX_BOX_NUM        = 10,     // 屏幕中最多同时展示的框数量。
     
     // 裁剪子图的目标尺寸 W1 x H1
@@ -48,7 +51,6 @@ module box_overlay_sync #(
     // 变量统一定义区
     // =========================================================
     genvar i_gen;
-    genvar s_gen;
     int idx;
     
     // 坐标计算中间变量 (改为供 always_comb 使用的纯组合逻辑)
@@ -82,6 +84,7 @@ module box_overlay_sync #(
     
     // 数据打拍，用于对齐 crop_wr_en 的一级时序延迟
     logic [23:0] video_rgb_in_d1;
+    logic video_vs_d1, video_hs_d1, video_de_d1;
     logic [23:0] line_buf [0:IMG_WIDTH-1];
     logic [23:0] curr_rgb_left;
     logic [23:0] prev_row_left;
@@ -151,109 +154,65 @@ module box_overlay_sync #(
         end
     endfunction
     // 碰撞检测流水线中间变量数组
-    localparam PIPELINE_STAGES = (MAX_BOX_NUM + 1) / 2;
     logic       cur_hit ;
     logic [7:0] cur_conf;
     logic [7:0] cur_cls ;
-    logic signed [15:0] pixel_x, pixel_y; // pixel_y实际上是当前行坐标+1，调用时需要注意
-    logic signed [15:0] pixel_y_curr;
+    logic signed [15:0] pixel_x, pixel_y; // Zero-based active pixel coordinates
     logic video_de_in_d;
     wire  hs_falling = !video_de_in && video_de_in_d;
-    assign pixel_y_curr = pixel_y - 16'sd1;
 
-    // =========================================================
-    // A. 例化异步 FIFO (PE Domain -> Video Domain)
-    // =========================================================
-    logic        fifo_rd_en;
-    logic [31:0] fifo_dout;
-    logic        fifo_empty;
-    logic        fifo_full;
-
-    my_fifo  #(
-        .DATA_WIDTH(32),
-        .FIFO_DEPTH(128)
-    ) 
-    // ip_fifo 
-    u_box_fifo (
-        .rd_clk         (clk_video),
-        .wr_clk         (clk_pe),
-        .rst            (~rst_n),
-        .wr_en          (box_wr_en),
-        .din            (box_wr_data),
-        .rd_en          (fifo_rd_en),
-        .dout           (fifo_dout),
-        .full           (fifo_full),
-        .empty          (fifo_empty)
-    );
-
-    // =========================================================
-    // B. Video 域：读取 FIFO 与 33 拍长包解析
-    // =========================================================
-    logic [5:0]  word_cnt; 
-    logic        packet_busy;
-    logic [2:0]  rd_req_cnt;
-
-    logic [7:0]  tmp_idx_x, tmp_idx_y, tmp_conf, tmp_cls;
-    logic signed [8:0] tmp_L, tmp_T, tmp_B, tmp_R;
-
-    logic signed [15:0] box_xmin   [0:MAX_BOX_NUM-1];
-    logic signed [15:0] box_xmax   [0:MAX_BOX_NUM-1];
-    logic signed [15:0] box_ymin   [0:MAX_BOX_NUM-1];
-    logic signed [15:0] box_ymax   [0:MAX_BOX_NUM-1];
-    
-    logic [15:0]        box_w0   [0:MAX_BOX_NUM-1];
-    logic [15:0]        box_h0   [0:MAX_BOX_NUM-1];
-    logic [7:0]         box_conf [0:MAX_BOX_NUM-1];
-    logic [7:0]         box_cls  [0:MAX_BOX_NUM-1];
-    logic [MAX_BOX_NUM-1 : 0] box_valid;
-    logic [7:0]         box_cnt; 
-    
-    // 每个 box 包共 5 个 word。my_fifo 的 dout 相对 rd_en 延迟 1 拍，
-    // 因此使用独立的读请求计数，避免多读下一个包的首 word。
-    assign fifo_rd_en = packet_busy && ~fifo_empty && (rd_req_cnt < 3'd5);
-    
-    logic fifo_valid;
-    always_ff @(posedge clk_video or negedge rst_n) begin
+    // Assemble all five words in the PE domain before crossing clocks.
+    // If full, discard an entire candidate. Partial packets must never reach
+    // the coordinate decoder, even when all display/crop slots are occupied.
+    logic [2:0] pe_word_cnt;
+    logic [31:0] pe_header;
+    logic [8:0] pe_l, pe_t, pe_r;
+    logic fifo_full, fifo_empty;
+    logic [67:0] fifo_dout;
+    logic fifo_rd_en;
+    wire packet_complete = box_wr_en && (pe_word_cnt == 4);
+    logic [15:0] dbg_box_packets_dropped /* synthesis syn_preserve=1 */;
+    always_ff @(posedge clk_pe or negedge rst_n) begin
         if (!rst_n) begin
-            box_cnt <= 1'b0;
-            fifo_valid <= 1'b0;
-            packet_busy <= 1'b0;
-            rd_req_cnt <= 3'd0;
-        end else begin
-            fifo_valid <= fifo_rd_en;
-
-            if (packet_busy && fifo_rd_en) begin
-                rd_req_cnt <= rd_req_cnt + 1'b1;
-            end
-
-            if (!packet_busy && (word_cnt == 0)) begin
-                if (box_valid[box_cnt]) begin
-                    if (box_cnt < MAX_BOX_NUM - 1) begin
-                        box_cnt <= box_cnt + 1'b1;
-                    end else begin
-                        box_cnt <= 0;
-                    end
-                end else if (!fifo_empty) begin
-                    packet_busy <= 1'b1;
-                    rd_req_cnt  <= 3'd0;
-                end
-            end
-
-            if(word_cnt == 6) begin
-                packet_busy <= 1'b0;
-                rd_req_cnt  <= 3'd0;
-                if(box_cnt < MAX_BOX_NUM - 1)begin
-                    box_cnt <= box_cnt + 1;
-                end else begin
-                    box_cnt <= 0;
-                end
-            end
+            pe_word_cnt <= 0;
+            pe_header <= 0; pe_l <= 0; pe_t <= 0; pe_r <= 0;
+            dbg_box_packets_dropped <= 0;
+        end else if (box_wr_en) begin
+            case (pe_word_cnt)
+                0: pe_header <= box_wr_data;
+                1: pe_l <= box_wr_data[8:0];
+                2: pe_t <= box_wr_data[8:0];
+                3: pe_r <= box_wr_data[8:0];
+                default: ;
+            endcase
+            if (pe_word_cnt == 4) begin
+                pe_word_cnt <= 0;
+                if (fifo_full && !(&dbg_box_packets_dropped))
+                    dbg_box_packets_dropped <= dbg_box_packets_dropped + 1'b1;
+            end else pe_word_cnt <= pe_word_cnt + 1'b1;
         end
     end
-    logic vs_in_d;
-    wire  vs_rising = video_vs_in && !vs_in_d;
+    my_fifo #(.DATA_WIDTH(68), .FIFO_DEPTH(64)) u_box_fifo (
+        .rd_clk(clk_video), .wr_clk(clk_pe), .rst(!rst_n),
+        .wr_en(packet_complete && !fifo_full),
+        .din({pe_header, pe_l, pe_t, pe_r, box_wr_data[8:0]}),
+        .rd_en(fifo_rd_en), .dout(fifo_dout), .full(fifo_full), .empty(fifo_empty)
+    );
 
-    // [修复1] 把坐标计算提取为纯组合逻辑
+    logic [7:0] tmp_idx_x, tmp_idx_y, tmp_conf, tmp_cls;
+    logic signed [8:0] tmp_L, tmp_T, tmp_B, tmp_R;
+    logic signed [15:0] box_xmin [0:MAX_BOX_NUM-1], box_xmax [0:MAX_BOX_NUM-1];
+    logic signed [15:0] box_ymin [0:MAX_BOX_NUM-1], box_ymax [0:MAX_BOX_NUM-1];
+    logic [15:0] box_w0 [0:MAX_BOX_NUM-1], box_h0 [0:MAX_BOX_NUM-1];
+    logic [7:0] box_conf [0:MAX_BOX_NUM-1], box_cls [0:MAX_BOX_NUM-1];
+    logic [MAX_BOX_NUM-1:0] box_valid;
+    logic vs_in_d;
+    wire vs_rising = video_vs_in && !vs_in_d;
+    always_ff @(posedge clk_video or negedge rst_n) begin
+        if (!rst_n) vs_in_d <= 0;
+        else vs_in_d <= video_vs_in;
+    end
+
     always_comb begin
         cx = {1'b0, tmp_idx_x} * GRID_STRIDE_CENTER + GRID_STRIDE_CENTER/2;
         cy = {1'b0, tmp_idx_y} * GRID_STRIDE_CENTER + GRID_STRIDE_CENTER/2;
@@ -262,94 +221,151 @@ module box_overlay_sync #(
         xmax_val = cx + tmp_R * GRID_STRIDE_LTRB;
         ymax_val = cy + tmp_B * GRID_STRIDE_LTRB;
     end
+    function automatic [15:0] clamp_coord(input integer v, input integer upper);
+        if (v < 1) clamp_coord = 1;
+        else if (v > upper) clamp_coord = upper[15:0];
+        else clamp_coord = v[15:0];
+    endfunction
+
+    // Streaming, class-agnostic overlap suppression. Before a crop starts,
+    // the higher-score box may replace lower-score overlapping candidates.
+    // Once sampling starts, freeze that box and suppress later duplicates;
+    // changing its dimensions halfway through would corrupt the crop FIFO.
+    localparam [2:0] BOX_IDLE=0, BOX_LOAD=1, BOX_DECODE=2, BOX_SIZE=3,
+                     BOX_AREA=4, BOX_COMPARE=5, BOX_COMMIT=6;
+    logic [2:0] box_state;
+    logic [15:0] cand_xmin, cand_xmax, cand_ymin, cand_ymax;
+    logic cand_valid, reject_candidate;
+    logic [MAX_BOX_NUM-1:0] overlap_mask;
+    integer scan_idx, free_idx, overlap_idx, commit_idx;
+    logic [15:0] inter_xmin, inter_xmax, inter_ymin, inter_ymax;
+    logic [31:0] intersection_area, candidate_area, existing_area;
+    logic [32:0] union_area;
+    logic [63:0] intersection_scaled, union_scaled;
+    logic overlap_locked;
+    // PDS ADS compatibility: module-scope loop variables, one per process.
+    integer lock_slot, box_slot;
+    always_comb begin
+        inter_xmin = (cand_xmin > box_xmin[scan_idx]) ? cand_xmin : box_xmin[scan_idx];
+        inter_xmax = (cand_xmax < box_xmax[scan_idx]) ? cand_xmax : box_xmax[scan_idx];
+        inter_ymin = (cand_ymin > box_ymin[scan_idx]) ? cand_ymin : box_ymin[scan_idx];
+        inter_ymax = (cand_ymax < box_ymax[scan_idx]) ? cand_ymax : box_ymax[scan_idx];
+        union_area = {1'b0, candidate_area} + {1'b0, existing_area} - {1'b0, intersection_area};
+        intersection_scaled = {32'd0, intersection_area} * NMS_IOU_DEN;
+        union_scaled = {31'd0, union_area} * NMS_IOU_NUM;
+        commit_idx = (overlap_idx >= 0) ? overlap_idx : free_idx;
+        overlap_locked = 0;
+        for (lock_slot=0; lock_slot<MAX_BOX_NUM; lock_slot=lock_slot+1) begin
+            if (overlap_mask[lock_slot] && box_valid[lock_slot] &&
+                (crop_active[lock_slot] || crop_done[lock_slot] ||
+                 (hs_falling && (pixel_y + 1 == box_ymin[lock_slot])))) overlap_locked = 1;
+        end
+    end
+    assign fifo_rd_en = (box_state == BOX_IDLE) && !fifo_empty;
 
     always_ff @(posedge clk_video or negedge rst_n) begin
         if (!rst_n) begin
-            word_cnt <= 0;
-            vs_in_d  <= 0;
-            for (idx = 0; idx < MAX_BOX_NUM; idx++) begin
-                box_valid[idx] <= 1'b0;
+            box_state <= BOX_IDLE;
+            box_valid <= '0;
+            tmp_idx_x <= 0; tmp_idx_y <= 0; tmp_conf <= 0; tmp_cls <= 0;
+            tmp_L <= 0; tmp_T <= 0; tmp_R <= 0; tmp_B <= 0;
+            cand_xmin <= 0; cand_xmax <= 0; cand_ymin <= 0; cand_ymax <= 0;
+            cand_valid <= 0; reject_candidate <= 0; overlap_mask <= '0;
+            scan_idx <= 0; free_idx <= -1; overlap_idx <= -1;
+            intersection_area <= 0; candidate_area <= 0; existing_area <= 0;
+            for (box_slot=0; box_slot<MAX_BOX_NUM; box_slot=box_slot+1) begin
+                box_xmin[box_slot] <= 0; box_xmax[box_slot] <= 0;
+                box_ymin[box_slot] <= 0; box_ymax[box_slot] <= 0;
+                box_w0[box_slot] <= 0; box_h0[box_slot] <= 0;
+                box_conf[box_slot] <= 0; box_cls[box_slot] <= 0;
             end
         end else begin
-            vs_in_d <= video_vs_in;
-            
-            for (idx = 0; idx < MAX_BOX_NUM; idx++) begin
-                // 【修改逻辑】只有当不仅超出边界，且已经成功经历过完整的crop，才释放框。避免半路生成的框被抛弃。
-                if((pixel_y > box_ymax[idx] + 1) && crop_done[idx]) begin
-                    box_valid[idx] <= 1'b0;
-                end
+            for (box_slot=0; box_slot<MAX_BOX_NUM; box_slot=box_slot+1) begin
+                if ((pixel_y > box_ymax[box_slot] + 1) && crop_done[box_slot]) box_valid[box_slot] <= 0;
             end
-            if (fifo_valid) begin
-                if (word_cnt == 0) begin
-                    tmp_cls   <= fifo_dout[31:24];
-                    tmp_idx_x <= fifo_dout[23:16];
-                    tmp_idx_y <= fifo_dout[15:8];
-                    tmp_conf  <= fifo_dout[7:0];
-                    word_cnt  <= 1;
+            case (box_state)
+                BOX_IDLE: if (fifo_rd_en) box_state <= BOX_LOAD;
+                BOX_LOAD: begin
+                    {tmp_cls, tmp_idx_x, tmp_idx_y, tmp_conf, tmp_L, tmp_T, tmp_R, tmp_B} <= fifo_dout;
+                    box_state <= BOX_DECODE;
                 end
-                else if (word_cnt == 1) begin
-                    tmp_L <= fifo_dout[8:0];
-                    word_cnt <= 2;
+                BOX_DECODE: begin
+                    // Signed 32-bit arithmetic preserves negative off-screen
+                    // coordinates until clamping, without an int cast.
+                    cand_xmin <= clamp_coord(xmin_val - 32'sd10, IMG_WIDTH - 2);
+                    cand_xmax <= clamp_coord(xmax_val + 32'sd10, IMG_WIDTH - 2);
+                    cand_ymin <= clamp_coord(ymin_val - 32'sd5, IMG_HEIGHT - 2);
+                    cand_ymax <= clamp_coord(ymax_val + 32'sd5, IMG_HEIGHT - 2);
+                    cand_valid <= (xmax_val > xmin_val) && (ymax_val > ymin_val) && (tmp_cls < CLASS_NUM);
+                    box_state <= BOX_SIZE;
                 end
-                else if (word_cnt == 2) begin
-                    tmp_T <= fifo_dout[8:0];
-                    word_cnt <= 3;
-                end
-                else if (word_cnt == 3) begin
-                    tmp_R <= fifo_dout[8:0];
-                    word_cnt <= 4;
-                end
-                else if (word_cnt == 4) begin
-                    tmp_B <= fifo_dout[8:0];
-                    word_cnt <= 5;
-                end
-            end 
-            // 无fifo_valid时
-            else begin
-                if (word_cnt == 5) begin
-                    word_cnt <= 6;
-                    // 寄存器锁存已算好的组合逻辑结果，并进行外扩
-                    box_xmin[box_cnt] <= ((xmin_val - 10) > 1) ? (xmin_val - 10) : 1;
-                    box_ymin[box_cnt] <= ((ymin_val -  5) > 1) ? (ymin_val -  5) : 1;
-                    box_xmax[box_cnt] <= ((xmax_val + 10) <  IMG_WIDTH - 2) ? (xmax_val + 10) :  IMG_WIDTH - 2;
-                    box_ymax[box_cnt] <= ((ymax_val +  5) < IMG_HEIGHT - 2) ? (ymax_val +  5) : IMG_HEIGHT - 2;
-
-                    box_conf [box_cnt]  <= tmp_conf;
-                    box_cls  [box_cnt]  <= tmp_cls;
-                end
-                // 剩余子图相关参数
-                else if(word_cnt == 6) begin
-                    word_cnt <= 0;
-                    
-                    box_w0[box_cnt]   <= box_xmax[box_cnt] - box_xmin[box_cnt];
-                    box_h0[box_cnt]   <= box_ymax[box_cnt] - box_ymin[box_cnt];
-                    // 如果原图过小（小于框大小，将原图扩展至与框一样大）
-                    // 修复：Y轴子图扩展时防止超出屏幕下边界
-                    if(box_ymax[box_cnt] - box_ymin[box_cnt] < CROP_HEIGHT) begin
-                        if (box_ymin[box_cnt] + CROP_HEIGHT <= IMG_HEIGHT - 2) begin
-                            box_ymax[box_cnt] <= box_ymin[box_cnt] + CROP_HEIGHT;
-                        end else begin
-                            // 如果往下扩展会越界，则顶住下边界，把 ymin 往上反推
-                            box_ymax[box_cnt] <= IMG_HEIGHT - 2;
-                            box_ymin[box_cnt] <= (IMG_HEIGHT - 2 >= CROP_HEIGHT) ? (IMG_HEIGHT - 2 - CROP_HEIGHT) : 1;
+                BOX_SIZE: begin
+                    cand_valid <= cand_valid && (cand_xmax > cand_xmin) && (cand_ymax > cand_ymin);
+                    // The one-pass resizer supports downsampling; preserve the
+                    // existing minimum crop extent and keep it inside the image.
+                    if (cand_xmax - cand_xmin < CROP_WIDTH) begin
+                        if (cand_xmin + CROP_WIDTH <= IMG_WIDTH - 2)
+                            cand_xmax <= cand_xmin + CROP_WIDTH;
+                        else begin
+                            cand_xmax <= IMG_WIDTH - 2;
+                            cand_xmin <= IMG_WIDTH - 2 - CROP_WIDTH;
                         end
-                        box_h0[box_cnt] <= CROP_HEIGHT;
                     end
-
-                    // 修复：X轴子图扩展同理
-                    if(box_xmax[box_cnt] - box_xmin[box_cnt] < CROP_WIDTH) begin
-                        if (box_xmin[box_cnt] + CROP_WIDTH <= IMG_WIDTH - 2) begin
-                            box_xmax[box_cnt] <= box_xmin[box_cnt] + CROP_WIDTH;
-                        end else begin
-                            box_xmax[box_cnt] <= IMG_WIDTH - 2;
-                            box_xmin[box_cnt] <= (IMG_WIDTH - 2 >= CROP_WIDTH) ? (IMG_WIDTH - 2 - CROP_WIDTH) : 1;
+                    if (cand_ymax - cand_ymin < CROP_HEIGHT) begin
+                        if (cand_ymin + CROP_HEIGHT <= IMG_HEIGHT - 2)
+                            cand_ymax <= cand_ymin + CROP_HEIGHT;
+                        else begin
+                            cand_ymax <= IMG_HEIGHT - 2;
+                            cand_ymin <= IMG_HEIGHT - 2 - CROP_HEIGHT;
                         end
-                        box_w0[box_cnt] <= CROP_WIDTH;
                     end
-                    box_valid[box_cnt] <= 1'b1;
-
+                    scan_idx <= 0; free_idx <= -1; overlap_idx <= -1;
+                    reject_candidate <= 0;
+                    overlap_mask <= '0;
+                    box_state <= BOX_AREA;
                 end
-            end
+                BOX_AREA: begin
+                    candidate_area <= (cand_xmax - cand_xmin) * (cand_ymax - cand_ymin);
+                    existing_area <= box_w0[scan_idx] * box_h0[scan_idx];
+                    if ((inter_xmax > inter_xmin) && (inter_ymax > inter_ymin))
+                        intersection_area <= (inter_xmax - inter_xmin) * (inter_ymax - inter_ymin);
+                    else intersection_area <= 0;
+                    box_state <= BOX_COMPARE;
+                end
+                BOX_COMPARE: begin
+                    if (!box_valid[scan_idx]) begin
+                        if (free_idx < 0) free_idx <= scan_idx;
+                    end else if ((intersection_area != 0) && (intersection_scaled >= union_scaled)) begin
+                        overlap_mask[scan_idx] <= 1;
+                        if (overlap_idx < 0) overlap_idx <= scan_idx;
+                        if ((tmp_conf <= box_conf[scan_idx]) || crop_active[scan_idx] || crop_done[scan_idx])
+                            reject_candidate <= 1;
+                    end
+                    if (scan_idx == MAX_BOX_NUM - 1) box_state <= BOX_COMMIT;
+                    else begin
+                        scan_idx <= scan_idx + 1;
+                        box_state <= BOX_AREA;
+                    end
+                end
+                BOX_COMMIT: begin
+                    if (cand_valid && !reject_candidate && !overlap_locked && (commit_idx >= 0)) begin
+                        for (box_slot=0; box_slot<MAX_BOX_NUM; box_slot=box_slot+1)
+                            if (overlap_mask[box_slot]) box_valid[box_slot] <= 0;
+                        box_xmin[commit_idx] <= cand_xmin;
+                        box_xmax[commit_idx] <= cand_xmax;
+                        box_ymin[commit_idx] <= cand_ymin;
+                        box_ymax[commit_idx] <= cand_ymax;
+                        box_w0[commit_idx] <= cand_xmax - cand_xmin;
+                        box_h0[commit_idx] <= cand_ymax - cand_ymin;
+                        box_conf[commit_idx] <= tmp_conf;
+                        box_cls[commit_idx] <= tmp_cls;
+                        box_valid[commit_idx] <= 1;
+                    end
+                    // Always drain the packet FIFO, even if no slot is free.
+                    box_state <= BOX_IDLE;
+                end
+                default: box_state <= BOX_IDLE;
+            endcase
         end
     end
 
@@ -363,10 +379,12 @@ module box_overlay_sync #(
             pixel_x <= 0;
             pixel_y <= 0;
             video_rgb_in_d1 <= 0;
+            video_vs_d1 <= 0; video_hs_d1 <= 0; video_de_d1 <= 0;
         end else begin
             video_de_in_d <= video_de_in;
             // [修复3]: 像素数据打一拍，用于对齐 crop_wr_en
-            video_rgb_in_d1 <= video_rgb_in; 
+            video_rgb_in_d1 <= video_rgb_in;
+            video_vs_d1 <= video_vs_in; video_hs_d1 <= video_hs_in; video_de_d1 <= video_de_in;
             
             if (vs_rising) begin
                 pixel_x <= 0;
@@ -375,7 +393,7 @@ module box_overlay_sync #(
             else if (video_de_in) begin
                 pixel_x <= pixel_x + 1;
             end 
-            // 这样生成的pixel_y实际上是当前行坐标+1，调用时需要注意
+            // At DE falling, pixel_y is the row that just ended.
             else if (hs_falling) begin
                 pixel_x <= 0;
                 pixel_y <= pixel_y + 1;
@@ -475,6 +493,10 @@ module box_overlay_sync #(
                     crop_wr_en[i_gen]    <= interp_valid_s2;
                     if (interp_valid_s2) begin
                         crop_rgb_out[i_gen] <= interp_rgb_s2;
+                        if (end_crop_s2) begin
+                            crop_done[i_gen] <= 1'b1;
+                            crop_active[i_gen] <= 1'b0;
+                        end
                     end
 
                     interp_valid_s2 <= interp_valid_s1;
@@ -495,7 +517,7 @@ module box_overlay_sync #(
                         if (hs_falling) begin
                             y_valid_row[i_gen] <= 1'b0;
 
-                            if (pixel_y_curr == box_ymin[i_gen]) begin
+                            if (pixel_y + 1 == box_ymin[i_gen]) begin
                                 x_step[i_gen]        <= init_x_step;
                                 y_step[i_gen]        <= init_y_step;
                                 x_fp[i_gen]          <= init_x_fp;
@@ -515,14 +537,11 @@ module box_overlay_sync #(
                             end else if (crop_active[i_gen] &&
                                          !crop_emit_done[i_gen] &&
                                          !y_valid_row[i_gen] &&
-                                         (pixel_y_curr >= box_ymin[i_gen] + y_sample[i_gen])) begin
+                                         (pixel_y + 1 == box_ymin[i_gen] + y_sample[i_gen])) begin
                                 y_valid_row[i_gen] <= 1'b1;
                             end
 
-                            if ((pixel_y_curr == box_ymax[i_gen]) && crop_active[i_gen]) begin
-                                crop_active[i_gen] <= 1'b0;
-                                crop_done[i_gen]   <= 1'b1;
-                            end
+
                         end
 
                         if (y_valid_row[i_gen] && video_de_in &&
@@ -581,12 +600,12 @@ module box_overlay_sync #(
         cur_conf <= 8'd0;
         cur_cls  <= 8'd0;
         for (idx = 0; idx < MAX_BOX_NUM; idx = idx + 1) begin
-            if (box_valid[idx] && 
+            if (video_de_in && box_valid[idx] &&
                 pixel_x         >= box_xmin[idx] && pixel_x         <= box_xmax[idx] &&
-                (pixel_y - 1)   >= box_ymin[idx] && (pixel_y - 1)   <= box_ymax[idx]) begin
+                pixel_y   >= box_ymin[idx] && pixel_y   <= box_ymax[idx]) begin
                 
                 if (pixel_x         < box_xmin[idx] + LINE_WIDTH || pixel_x             > box_xmax[idx] - LINE_WIDTH ||
-                    (pixel_y - 1)   < box_ymin[idx] + LINE_WIDTH || (pixel_y - 1)       > box_ymax[idx] - LINE_WIDTH) begin
+                    pixel_y   < box_ymin[idx] + LINE_WIDTH || pixel_y       > box_ymax[idx] - LINE_WIDTH) begin
                     cur_hit  <= 1'b1;
                     cur_conf <= box_conf[idx] ;
                     cur_cls  <= box_cls[idx] ;
@@ -605,9 +624,9 @@ module box_overlay_sync #(
             video_de_out <= 0; 
             video_rgb_out <= 0;
         end else begin
-            video_vs_out <= video_vs_in;
-            video_hs_out <= video_hs_in;
-            video_de_out <= video_de_in;
+            video_vs_out <= video_vs_d1;
+            video_hs_out <= video_hs_d1;
+            video_de_out <= video_de_d1;
             
             if (cur_hit) begin
                 if (cur_cls == 0) 
@@ -623,7 +642,7 @@ module box_overlay_sync #(
                 else
                     video_rgb_out <= 24'hFF_00_FF; 
             end else begin
-                video_rgb_out <= video_rgb_in; 
+                video_rgb_out <= video_rgb_in_d1;
             end
         end
     end
