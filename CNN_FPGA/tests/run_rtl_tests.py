@@ -12,6 +12,7 @@ TESTS = {
     "tb_lprnet_post_process": ["data_process/lprnet_post_process.sv", "data_process/lprnet_spatial_sum.sv",
                                "data_process/extrema_finder.sv", "data_process/sdp_ram.sv"],
     "tb_char_overlay": ["overlay/char_overlay.sv", "my_fifo.sv"],
+    "tb_char_overlay_multitarget": ["overlay/char_overlay.sv", "my_fifo.sv"],
     "tb_box_crop": ["overlay/box_overlay_sync.sv", "my_fifo.sv"],
 }
 

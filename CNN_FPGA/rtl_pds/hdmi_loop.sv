@@ -22,6 +22,8 @@ module hdmi_loop #(
     parameter   NMS_IOU_THRESH = 128,     // IoU in units of 1/256
     parameter   OSD_MIN_CHARS = 7,
     parameter   OSD_MAX_CHARS = 8,
+    // Tracks persist across the whole frame; crop slots can be reused by row.
+    parameter   OSD_MAX_PLATES = 16,
     parameter   OSD_CONFIRM_RESULTS = 2,
     parameter   OSD_HOLD_FRAMES = 6
 )(
@@ -563,7 +565,7 @@ module hdmi_loop #(
         .CHAR_NUM(76),
         .IMG_WIDTH(IMG_COL_LAYER0),
         .IMG_HEIGHT(IMG_ROW_LAYER0),
-        .MAX_PLATES(MAX_BOX_NUM),
+        .MAX_PLATES(OSD_MAX_PLATES),
         .MIN_PLATE_CHARS(OSD_MIN_CHARS),
         .MAX_PLATE_CHARS(OSD_MAX_CHARS),
         .CONFIRM_RESULTS(OSD_CONFIRM_RESULTS),
