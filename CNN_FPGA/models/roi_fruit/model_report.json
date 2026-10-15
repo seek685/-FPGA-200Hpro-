@@ -1,0 +1,389 @@
+{
+  "classes": [
+    "APPLE",
+    "BANANA",
+    "ORANGE",
+    "OTHER"
+  ],
+  "architecture": "RGB28-Conv3x3(3,8)-ReLU-Pool2-Conv3x3(8,16)-ReLU-Pool2-FC(400,32)-ReLU-FC(32,4)",
+  "seed": 20261015,
+  "source_repository": "fruits-360/fruits-360-100x100",
+  "source_revision": "cd2921eed66223cc1e5dc6a6cc089b8e9cd4ab21",
+  "dataset_manifest_sha256": "91295e45a49851f4553e332a95f9ec9d95bf346b694c6a71b83d912493c5905c",
+  "training_samples": 2176,
+  "validation_samples": 543,
+  "test_samples": 940,
+  "best_epoch": 41,
+  "float_test_accuracy": 0.9372340440750122,
+  "integer_test_accuracy": 0.9382978723404255,
+  "confusion_matrix_actual_by_predicted": [
+    [
+      232,
+      0,
+      0,
+      8
+    ],
+    [
+      0,
+      120,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      120,
+      0
+    ],
+    [
+      47,
+      0,
+      3,
+      410
+    ]
+  ],
+  "shifts": [
+    10,
+    8,
+    10
+  ],
+  "quantization": [
+    {
+      "input_exp": 8,
+      "weight_exp": 8,
+      "output_exp": 6,
+      "calibration_max": 2.654782772064209
+    },
+    {
+      "input_exp": 6,
+      "weight_exp": 7,
+      "output_exp": 5,
+      "calibration_max": 6.99494743347168
+    },
+    {
+      "input_exp": 5,
+      "weight_exp": 7,
+      "output_exp": 2,
+      "calibration_max": 46.74876022338867
+    },
+    {
+      "input_exp": 2,
+      "weight_exp": 7,
+      "output_exp": 9
+    }
+  ],
+  "fixture_source_paths": [
+    "Test/Apple Red 1/r_45_100.jpg",
+    "Test/Apple Granny Smith 1/r_99_100.jpg",
+    "Test/Banana 1/r_28_100.jpg",
+    "Test/Banana 1/r_56_100.jpg",
+    "Test/Orange 1/96_100.jpg",
+    "Test/Orange 1/r_59_100.jpg",
+    "Test/Kiwi 1/34_100.jpg",
+    "synthetic/20261018/99"
+  ],
+  "fixture_labels": [
+    0,
+    0,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3
+  ],
+  "fixture_predictions": [
+    0,
+    0,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3
+  ],
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.0527888326083912,
+      "validation_accuracy": 0.5359116196632385,
+      "validation_loss": 0.9121991991996765
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.6305719009217094,
+      "validation_accuracy": 0.5819520950317383,
+      "validation_loss": 0.6392078995704651
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.49184417286339926,
+      "validation_accuracy": 0.6298342347145081,
+      "validation_loss": 0.5146377682685852
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.40602964601095987,
+      "validation_accuracy": 0.8674033284187317,
+      "validation_loss": 0.33188024163246155
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.3064719556885607,
+      "validation_accuracy": 0.8416206240653992,
+      "validation_loss": 0.32193106412887573
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.2596159349469578,
+      "validation_accuracy": 0.8600368499755859,
+      "validation_loss": 0.2975684404373169
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.2347227808307199,
+      "validation_accuracy": 0.8839778900146484,
+      "validation_loss": 0.2656935751438141
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.244238563320216,
+      "validation_accuracy": 0.8416206240653992,
+      "validation_loss": 0.3394387662410736
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.19420338838415988,
+      "validation_accuracy": 0.8379374146461487,
+      "validation_loss": 0.38008031249046326
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.22683111074216225,
+      "validation_accuracy": 0.9281768202781677,
+      "validation_loss": 0.23722884058952332
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.1911380157312926,
+      "validation_accuracy": 0.9060773253440857,
+      "validation_loss": 0.22012582421302795
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.16862820812007961,
+      "validation_accuracy": 0.8453038930892944,
+      "validation_loss": 0.4087202548980713
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.17652275435188236,
+      "validation_accuracy": 0.8453038930892944,
+      "validation_loss": 0.34046730399131775
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.16512702843722174,
+      "validation_accuracy": 0.8545119762420654,
+      "validation_loss": 0.31184035539627075
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.17666115721358971,
+      "validation_accuracy": 0.9263351559638977,
+      "validation_loss": 0.17360612750053406
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.1402458618668949,
+      "validation_accuracy": 0.9079189896583557,
+      "validation_loss": 0.2110263705253601
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.15126856701338992,
+      "validation_accuracy": 0.9373849034309387,
+      "validation_loss": 0.12194419652223587
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.15588664920891032,
+      "validation_accuracy": 0.90055251121521,
+      "validation_loss": 0.21473555266857147
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.13042799832628055,
+      "validation_accuracy": 0.9060773253440857,
+      "validation_loss": 0.20760446786880493
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.12846209097872763,
+      "validation_accuracy": 0.9631676077842712,
+      "validation_loss": 0.09927743673324585
+    },
+    {
+      "epoch": 21,
+      "train_loss": 0.11329373859745615,
+      "validation_accuracy": 0.9373849034309387,
+      "validation_loss": 0.15517699718475342
+    },
+    {
+      "epoch": 22,
+      "train_loss": 0.10834999157882788,
+      "validation_accuracy": 0.968692421913147,
+      "validation_loss": 0.11267068237066269
+    },
+    {
+      "epoch": 23,
+      "train_loss": 0.10832958547946285,
+      "validation_accuracy": 0.968692421913147,
+      "validation_loss": 0.10719650238752365
+    },
+    {
+      "epoch": 24,
+      "train_loss": 0.10034593978129766,
+      "validation_accuracy": 0.9631676077842712,
+      "validation_loss": 0.13727906346321106
+    },
+    {
+      "epoch": 25,
+      "train_loss": 0.09311734874020605,
+      "validation_accuracy": 0.8379374146461487,
+      "validation_loss": 0.43308356404304504
+    },
+    {
+      "epoch": 26,
+      "train_loss": 0.12576763353803577,
+      "validation_accuracy": 0.9373849034309387,
+      "validation_loss": 0.16132523119449615
+    },
+    {
+      "epoch": 27,
+      "train_loss": 0.12191945730763323,
+      "validation_accuracy": 0.9539594650268555,
+      "validation_loss": 0.15881535410881042
+    },
+    {
+      "epoch": 28,
+      "train_loss": 0.10936204256380305,
+      "validation_accuracy": 0.8950276374816895,
+      "validation_loss": 0.27459222078323364
+    },
+    {
+      "epoch": 29,
+      "train_loss": 0.10958827122607652,
+      "validation_accuracy": 0.8987108469009399,
+      "validation_loss": 0.2856360673904419
+    },
+    {
+      "epoch": 30,
+      "train_loss": 0.07870437725282767,
+      "validation_accuracy": 0.9631676077842712,
+      "validation_loss": 0.12617899477481842
+    },
+    {
+      "epoch": 31,
+      "train_loss": 0.09850487244479797,
+      "validation_accuracy": 0.9668508172035217,
+      "validation_loss": 0.08672425895929337
+    },
+    {
+      "epoch": 32,
+      "train_loss": 0.09675124232821605,
+      "validation_accuracy": 0.9613259434700012,
+      "validation_loss": 0.12930269539356232
+    },
+    {
+      "epoch": 33,
+      "train_loss": 0.09347146902890767,
+      "validation_accuracy": 0.918968677520752,
+      "validation_loss": 0.23035898804664612
+    },
+    {
+      "epoch": 34,
+      "train_loss": 0.14954978567274177,
+      "validation_accuracy": 0.968692421913147,
+      "validation_loss": 0.12187429517507553
+    },
+    {
+      "epoch": 35,
+      "train_loss": 0.08779864363810595,
+      "validation_accuracy": 0.968692421913147,
+      "validation_loss": 0.0787285715341568
+    },
+    {
+      "epoch": 36,
+      "train_loss": 0.09010885003954172,
+      "validation_accuracy": 0.970534086227417,
+      "validation_loss": 0.07385778427124023
+    },
+    {
+      "epoch": 37,
+      "train_loss": 0.08600665048203048,
+      "validation_accuracy": 0.9631676077842712,
+      "validation_loss": 0.11923341453075409
+    },
+    {
+      "epoch": 38,
+      "train_loss": 0.08850721110973288,
+      "validation_accuracy": 0.9650092124938965,
+      "validation_loss": 0.10607534646987915
+    },
+    {
+      "epoch": 39,
+      "train_loss": 0.09699677588308558,
+      "validation_accuracy": 0.9484346508979797,
+      "validation_loss": 0.15502022206783295
+    },
+    {
+      "epoch": 40,
+      "train_loss": 0.07974748664042529,
+      "validation_accuracy": 0.968692421913147,
+      "validation_loss": 0.10774534195661545
+    },
+    {
+      "epoch": 41,
+      "train_loss": 0.06767382291967378,
+      "validation_accuracy": 0.9815837740898132,
+      "validation_loss": 0.08615002781152725
+    },
+    {
+      "epoch": 42,
+      "train_loss": 0.09064042118980604,
+      "validation_accuracy": 0.9539594650268555,
+      "validation_loss": 0.15511208772659302
+    },
+    {
+      "epoch": 43,
+      "train_loss": 0.08682258942109697,
+      "validation_accuracy": 0.9668508172035217,
+      "validation_loss": 0.0866418331861496
+    },
+    {
+      "epoch": 44,
+      "train_loss": 0.07637546715490959,
+      "validation_accuracy": 0.9779005646705627,
+      "validation_loss": 0.060675133019685745
+    },
+    {
+      "epoch": 45,
+      "train_loss": 0.07584257621098967,
+      "validation_accuracy": 0.9668508172035217,
+      "validation_loss": 0.07271654903888702
+    }
+  ],
+  "limits": [
+    "Fixed-ROI single-object classification, not object detection.",
+    "Test accuracy is on the selected Fruits-360 subset and synthetic negatives, not a live HDMI camera.",
+    "Train and validation images include correlated rotations; this is not a held-out-object generalization study.",
+    "OTHER is trained on kiwi, lemon, pear and synthetic backgrounds; it does not guarantee rejection of all unseen objects.",
+    "Dataset objects have white backgrounds; use a plain light background for initial board bring-up."
+  ],
+  "environment": {
+    "torch": "2.5.1+cpu",
+    "numpy": "2.1.3",
+    "pillow": "11.0.0"
+  }
+}

@@ -6,6 +6,7 @@
 `include "data_process/header/layer20.vh"
 `include "data_process/header/layer24.vh"
 `include "data_process/header/layer31.vh"  // 用于LPRNet输出维度的宏定义
+`include "roi_cnn/roi_cnn_model.vh"
 
 `define UD #1
 
@@ -17,7 +18,8 @@ module hdmi_loop #(
     
     // 网络配置及 OSD 相关参数
     parameter   LUT_FILE   = "mem_data/sigmoid_lut_9bit_to_8bit_h.mem",
-    parameter   CHARS_FILE = "../data_process/mem_data/chars_16x16.mem"
+    parameter   CHARS_FILE = "../data_process/mem_data/chars_16x16.mem",
+    parameter   ROI_CNN_ENABLE = 1
 )(
     input  wire       sys_clk       , // 200Pro+ system clock 27MHz
     input  wire       rst_n         ,  
@@ -584,7 +586,58 @@ module hdmi_loop #(
 
 
     // =========================================================
-    // 8. 200Pro+ MS7210 并行视频输出
+    // 8. Fixed ROI object classifier. It shares the video pixel clock and
+    //    observes original RGB pixels before any plate box/text is painted.
+    //    The existing YOLO/LPRNet pipeline remains a separate branch.
+    // =========================================================
+    wire roi_video_vs, roi_video_hs, roi_video_de;
+    wire [23:0] roi_video_rgb;
+    generate
+        if (ROI_CNN_ENABLE != 0) begin : gen_roi_cnn
+            wire image_wr_en, inference_start, inference_busy, inference_done;
+            wire [9:0] image_wr_addr;
+            wire [23:0] image_wr_rgb;
+            wire [1:0] predicted_class;
+            wire signed [31:0] score0, score1, score2, score3;
+
+            roi_capture_28 u_capture (
+                .clk(pixclk_out), .rst_n(rst_n_app_video),
+                .video_vs(vs_in_dly2), .video_de(de_in_dly2),
+                .video_rgb(rgb_in_dly2), .core_busy(inference_busy),
+                .image_wr_en(image_wr_en), .image_wr_addr(image_wr_addr),
+                .image_wr_rgb(image_wr_rgb), .start(inference_start)
+            );
+
+            roi_cnn_core #(
+                .SHIFT1(`ROI_CNN_SHIFT1), .SHIFT2(`ROI_CNN_SHIFT2),
+                .SHIFT3(`ROI_CNN_SHIFT3)
+            ) u_classifier (
+                .clk(pixclk_out), .rst_n(rst_n_app_video),
+                .image_wr_en(image_wr_en), .image_wr_addr(image_wr_addr),
+                .image_wr_rgb(image_wr_rgb), .start(inference_start),
+                .busy(inference_busy), .done(inference_done),
+                .class_id(predicted_class),
+                .score0(score0), .score1(score1), .score2(score2), .score3(score3)
+            );
+
+            roi_label_overlay u_roi_label (
+                .clk(pixclk_out), .rst_n(rst_n_app_video),
+                .video_vs(final_vs_out), .video_hs(final_hs_out),
+                .video_de(final_de_out), .video_rgb(final_rgb_out),
+                .result_valid(inference_done), .result_class(predicted_class),
+                .video_vs_out(roi_video_vs), .video_hs_out(roi_video_hs),
+                .video_de_out(roi_video_de), .video_rgb_out(roi_video_rgb)
+            );
+        end else begin : gen_roi_cnn_bypass
+            assign roi_video_vs = final_vs_out;
+            assign roi_video_hs = final_hs_out;
+            assign roi_video_de = final_de_out;
+            assign roi_video_rgb = final_rgb_out;
+        end
+    endgenerate
+
+    // =========================================================
+    // 9. 200Pro+ MS7210 并行视频输出
     // =========================================================
     // 与官方 HDMI loop 例程相同，在像素时钟域同步寄存数据及控制信号。
     always @(posedge pixclk_out) begin
@@ -596,12 +649,12 @@ module hdmi_loop #(
             g_out  <= 8'd0;
             b_out  <= 8'd0;
         end else begin
-            vs_out <= final_vs_out;
-            hs_out <= final_hs_out;
-            de_out <= final_de_out;
-            r_out  <= final_rgb_out[23:16];
-            g_out  <= final_rgb_out[15:8];
-            b_out  <= final_rgb_out[7:0];
+            vs_out <= roi_video_vs;
+            hs_out <= roi_video_hs;
+            de_out <= roi_video_de;
+            r_out  <= roi_video_rgb[23:16];
+            g_out  <= roi_video_rgb[15:8];
+            b_out  <= roi_video_rgb[7:0];
         end
     end
 
