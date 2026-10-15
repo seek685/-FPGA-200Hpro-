@@ -19,6 +19,24 @@ TESTS = {
 }
 
 
+def check_pds_files(pds_text, pds_dir):
+    # Check the file-entry form used by the original PDS-generated project.
+    # This is a targeted metadata check, not a replacement for the PDS parser.
+    entries = re.findall(
+        r'\(_file\s+"([^"]+)"(?:\s*\+\s*"[^"]*")?\s*((?:\([^()]*\)\s*)*)\)',
+        pds_text)
+    if not entries or len(entries) != len(re.findall(r'\(_file\s', pds_text)):
+        raise RuntimeError("Unrecognized PDS file-entry structure")
+    for path, metadata in entries:
+        if not re.fullmatch(
+                r'\(_format\s+\w+\)\s*'
+                r'\(_timespec\s+"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"\)\s*', metadata):
+            raise RuntimeError(f"PDS file entry needs _format followed by _timespec: {path}")
+    for path in re.findall(r'\(_(?:file|ip_source_item)\s+"([^"]+)"', pds_text):
+        if not (pds_dir / path).is_file():
+            raise RuntimeError(f"Missing PDS input: {path}")
+
+
 def check_model_files():
     hashes = json.loads((ROOT / "models/roi_fruit/artifact_sha256.json").read_text())
     for relative, expected in hashes.items():
@@ -40,18 +58,20 @@ def check_model_files():
         if len(words) != count or not all(re.fullmatch(rf"[0-9a-f]{{{digits}}}", w) for w in words):
             raise RuntimeError(f"Invalid ROM {path}")
     pds = ROOT / "prj_pds/hdmi_loop.pds"
-    for path in re.findall(r'\(_(?:file|ip_source_item)\s+"([^"]+)"', pds.read_text()):
-        if not (pds.parent / path).is_file():
-            raise RuntimeError(f"Missing PDS input: {path}")
-    print("PASS model/fixture SHA256, model shifts, ROM lengths, PDS input paths", flush=True)
+    check_pds_files(pds.read_text(), pds.parent)
+    print("PASS model/fixture SHA256, model shifts, ROM lengths, PDS file metadata/input paths", flush=True)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--test", action="append", choices=sorted(TESTS))
     parser.add_argument("--build-dir", type=Path)
+    parser.add_argument("--check-only", action="store_true",
+                        help="Check artifacts and PDS file entries without running RTL simulations")
     args = parser.parse_args()
     check_model_files()
+    if args.check_only:
+        return
     executable = shutil.which("verilator")
     if not executable:
         raise SystemExit("Verilator is required; these tests do not use PDS.")

@@ -31,6 +31,8 @@ git clone --branch feature/roi-fruit-cnn --single-branch https://github.com/seek
 
 反馈时记录：输入模式、显示类别、原车牌功能是否受影响；编译失败时提供第一条错误。若图像正常但分类异常，区分长期 `WAIT`、总是 `OTHER`、固定错类及来回跳类。
 
+若打开早期版本的本分支时出现 `Flow-0130`，指向 `hdmi_loop.pds` 第 24 行：四个新增源文件条目曾遗漏 `_timespec`，现已按原工程格式补齐。关闭 PDS，在该分支目录执行 `git pull --ff-only`，然后重新打开工程。可运行 `python3 CNN_FPGA/tests/run_roi_tests.py --check-only` 检查文件条目和模型文件；此检查不能代替 PDS Compile。
+
 ### 模型与验证结果
 
 模型结构参考 MIT 项目 [MicroCNN-TangNano20k](https://github.com/SweiryDev/MicroCNN-TangNano20k)，重新训练水果权重并新写可移植 RTL。没有复制其 Gowin 原语或 BloodMNIST 权重。
