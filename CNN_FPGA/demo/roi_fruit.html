@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FPGA 固定区域分类测试</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#fff}
+canvas{display:block;width:100vw;height:100vh;object-fit:contain}
+</style>
+<canvas id="screen" width="1280" height="720"></canvas>
+<script>
+"use strict";
+const canvas = document.getElementById("screen");
+const ctx = canvas.getContext("2d");
+const labels = ["APPLE", "APPLE", "BANANA", "BANANA", "ORANGE", "ORANGE", "OTHER", "OTHER"];
+const pictures = labels.map((label,i) => {
+  const image = new Image();
+  image.src = `../tests/fixtures/roi_cnn/${i}_${label}.png`;
+  image.onload = draw;
+  image.onerror = () => { error = "测试图片加载失败，请保留 demo 与 tests 文件夹的相对位置。"; draw(); };
+  return image;
+});
+let selected = 0;
+let white = false;
+let error = "";
+function draw() {
+  ctx.fillStyle = "white";
+  ctx.fillRect(0,0,1280,720);
+  ctx.imageSmoothingEnabled = false;
+  if (!white && pictures[selected].complete && pictures[selected].naturalWidth)
+    ctx.drawImage(pictures[selected],528,248,224,224);
+  ctx.fillStyle = "#253047";
+  ctx.font = "26px sans-serif";
+  ctx.fillText(`固定区域分类测试 ${selected+1}/8 · 预期 ${white ? "OTHER（空白）" : labels[selected]}`,32,48);
+  ctx.font = "18px sans-serif";
+  ctx.fillText("电脑 HDMI 活动信号设为 1280×720、60 Hz；按 Enter 全屏",32,85);
+  ctx.fillText("← → 切换图片；W 切换空白；每张图保持至少 2 秒",32,112);
+  ctx.fillText("绿框和黄色类别应由 FPGA 叠加；本页面只提供输入画面。",32,650);
+  if (error) { ctx.fillStyle="red";ctx.fillText(error,32,685); }
+}
+document.addEventListener("keydown", async event => {
+  if (["ArrowRight","ArrowLeft","Enter","w","W"].includes(event.key)) event.preventDefault();
+  if(event.key === "ArrowRight") { selected=(selected+1)%8;white=false; }
+  if(event.key === "ArrowLeft") { selected=(selected+7)%8;white=false; }
+  if(event.key.toLowerCase()==="w") white=!white;
+  if(event.key==="Enter" && !document.fullscreenElement) {
+    try { await document.documentElement.requestFullscreen(); }
+    catch { error="全屏失败，可使用浏览器 F11 全屏。"; }
+  }
+  draw();
+});
+draw();
+</script>
+</html>

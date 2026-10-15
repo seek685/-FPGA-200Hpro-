@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-15",
+  "base_commit": "4706536",
+  "tool": "Verilator 5.020",
+  "rtl_tests": {
+    "tb_roi_capture_28": "PASS: exact 8x8 averages, busy skips, interrupted/malformed VS/DE frames, reset",
+    "tb_roi_label_overlay": "PASS: class confirmation, VS update, expiry, fonts, clipping, RGB/sync latency",
+    "tb_roi_cnn_core": "PASS: 2 synthetic complete-layer references, 8 real vectors/all 32 logits, protocol/reset",
+    "tb_roi_cnn_video": "PASS: 6 standard 720p frames, 2352 exact RGB pixels, 3 inferences/all 12 logits, busy frame skips, label at VS"
+  },
+  "inference_cycles": 634580,
+  "pixel_clock_mhz_assumed": 74.25,
+  "core_time_ms_at_assumed_clock": 8.546531986531987,
+  "interface_lint": {
+    "enabled": "PASS",
+    "bypass": "PASS",
+    "limitation": "Old YOLO/LPR/DDR/HDMI modules and vendor IP replaced by interface stubs; only new ROI modules are real in this check."
+  },
+  "project_files": "142 source/IP input paths exist; PG2L200H -6 FBB676; stale Compile output state removed",
+  "not_run": [
+    "PDS Compile",
+    "PDS synthesis and device mapping",
+    "PDS placement/routing and timing",
+    "Bitstream generation",
+    "FPGA board test",
+    "Live HDMI camera accuracy test"
+  ]
+}
