@@ -9,6 +9,8 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 RTL = ROOT / "rtl_pds"
 TESTS = {
+    "tb_max_pool2d": ["data_process/max_pool2d.sv"],
+    "tb_reset_release_sync": ["reset_release_sync.sv"],
     "tb_lprnet_post_process": ["data_process/lprnet_post_process.sv", "data_process/lprnet_spatial_sum.sv",
                                "data_process/extrema_finder.sv", "data_process/sdp_ram.sv"],
     "tb_char_overlay": ["overlay/char_overlay.sv", "my_fifo.sv"],

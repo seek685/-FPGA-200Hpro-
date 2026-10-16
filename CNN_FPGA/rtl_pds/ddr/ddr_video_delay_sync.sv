@@ -84,6 +84,8 @@ module ddr_video_delay_sync #(
     wire                        axi_rready_unused;
 
     wire                        ddr_clk;
+    wire                        rst_n_pix;
+    wire                        rst_n_ddr;
     wire                        pll_lock;
     wire                        phy_pll_lock;
     wire                        gpll_lock;
@@ -107,6 +109,16 @@ module ddr_video_delay_sync #(
     wire                        align_error_unused;
     wire [3:0]                  debug_rst_state_unused;
     wire [3:0]                  debug_cpd_state_unused;
+
+    // The DDR IP receives its original reset request. User logic releases
+    // reset separately in the video and controller clock domains, including
+    // when either clock starts later than the board configuration clock.
+    reset_release_sync u_pix_reset_sync (
+        .clk(pix_clk), .arst_n(rst_n), .rst_n(rst_n_pix)
+    );
+    reset_release_sync u_ddr_reset_sync (
+        .clk(ddr_clk), .arst_n(rst_n), .rst_n(rst_n_ddr)
+    );
 
     logic                       wr_cmd_en;
     logic [CTRL_ADDR_WIDTH-1:0] wr_cmd_addr;
@@ -241,8 +253,8 @@ module ddr_video_delay_sync #(
     wire input_de_rise = video_de_in && !video_de_d1;
     wire input_de_fall = !video_de_in && video_de_d1;
 
-    always @(posedge pix_clk or negedge rst_n) begin
-        if (!rst_n) begin
+    always @(posedge pix_clk or negedge rst_n_pix) begin
+        if (!rst_n_pix) begin
             video_vs_d1             <= 1'b0;
             video_de_d1             <= 1'b0;
             read_start_pix_sync     <= 3'b0;
@@ -360,8 +372,8 @@ module ddr_video_delay_sync #(
         .rd_data   (wr_line_data)
     );
 
-    always @(posedge ddr_clk or negedge rst_n) begin
-        if (!rst_n) begin
+    always @(posedge ddr_clk or negedge rst_n_ddr) begin
+        if (!rst_n_ddr) begin
             flush_sync           <= 3'b0;
             flush_toggle_ddr_d1  <= 1'b0;
             flush_frame_bank_ddr <= 1'b0;
@@ -381,8 +393,8 @@ module ddr_video_delay_sync #(
     assign flush_toggle_ddr = flush_sync[2];
     assign flush_pulse_ddr  = flush_toggle_ddr ^ flush_toggle_ddr_d1;
 
-    always @(posedge ddr_clk or negedge rst_n) begin
-        if (!rst_n) begin
+    always @(posedge ddr_clk or negedge rst_n_ddr) begin
+        if (!rst_n_ddr) begin
             wr_state       <= WR_IDLE;
             wr_cmd_en      <= 1'b0;
             wr_cmd_addr    <= '0;
@@ -427,8 +439,8 @@ module ddr_video_delay_sync #(
 
     assign wr_ctrl_data = wr_line_data;
 
-    always @(posedge ddr_clk or negedge rst_n) begin
-        if (!rst_n) begin
+    always @(posedge ddr_clk or negedge rst_n_ddr) begin
+        if (!rst_n_ddr) begin
             read_start_sync        <= 3'b0;
             read_bank_sync         <= 3'b0;
             pending_read           <= 1'b0;
@@ -565,8 +577,8 @@ module ddr_video_delay_sync #(
         rd_fill_line_ready = rd_fill_buf_sel ? line_ready_ddr[1] : line_ready_ddr[0];
     end
 
-    always @(posedge pix_clk or negedge rst_n) begin
-        if (!rst_n) begin
+    always @(posedge pix_clk or negedge rst_n_pix) begin
+        if (!rst_n_pix) begin
             output_active         <= 1'b0;
             h_cnt                 <= 12'd0;
             v_cnt                 <= 12'd0;

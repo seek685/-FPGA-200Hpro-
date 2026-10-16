@@ -1,0 +1,297 @@
+{
+  "schema_version": 1,
+  "source": {
+    "release_url": "https://github.com/seek685/-FPGA-200Hpro-/releases/tag/pds-debug-20261016",
+    "archive": "FPGA_PDS_debug_20261016_141836_f676f13e.zip",
+    "archive_bytes": 133810194,
+    "sha256": "2da3d5a07b0f3d1bbf55b610d588e8f25712b7ff353b88a832fd0dc6ad364fe6",
+    "zip_crc": "pass",
+    "collected_at": "2026-10-16T14:18:36+08:00",
+    "git_head": "dc4e6ee84d94ede07354021f7ed1c9556fdac8cc",
+    "git_branch": "feature/roi-fruit-cnn",
+    "rtl_files_matching_head_after_crlf_normalization": 371,
+    "timing_report_at": "2026-10-15T23:56:09+08:00",
+    "tool": "PDS Fabric Compiler 2022.2-SP6.1 build 138931",
+    "device": "PG2L200H-6FBB676",
+    "bitstream_generated": true,
+    "timing_closed": false
+  },
+  "timing": {
+    "units": "ns",
+    "clk_pe_period": 6.5,
+    "pixclk_in_period": 13.0,
+    "slow_setup_wns": -6.136,
+    "slow_setup_tns": -449.055,
+    "slow_setup_failing_endpoints": 127,
+    "slow_setup_groups": [
+      {
+        "from": "clk_pe",
+        "to": "clk_pe",
+        "wns": -0.292,
+        "tns": -3.362,
+        "failing_endpoints": 37
+      },
+      {
+        "from": "cfg_clk (inferred)",
+        "to": "clk_pe",
+        "wns": -4.813,
+        "tns": -51.882,
+        "failing_endpoints": 11
+      },
+      {
+        "from": "cfg_clk (inferred)",
+        "to": "pixclk_in",
+        "wns": -6.136,
+        "tns": -393.811,
+        "failing_endpoints": 79
+      }
+    ],
+    "slow_recovery_groups": [
+      {
+        "from": "cfg_clk (inferred)",
+        "to": "clk_pe",
+        "wns": -9.233,
+        "tns": -41088.738,
+        "failing_endpoints": 6127
+      },
+      {
+        "from": "cfg_clk (inferred)",
+        "to": "pixclk_in",
+        "wns": -7.295,
+        "tns": -4391.874,
+        "failing_endpoints": 665
+      }
+    ],
+    "slow_hold_whs": 0.104,
+    "fast_hold_whs": 0.1,
+    "slow_hold_failing_endpoints": 0,
+    "fast_hold_failing_endpoints": 0,
+    "pixclk_same_domain_setup_wns": 0.128,
+    "pixclk_same_domain_worst_module": "u_char_overlay",
+    "unconstrained_input_port_warnings": 60,
+    "unconstrained_output_port_warnings": 104,
+    "coverage_note": "HDMI/DDR/I2C and other I/O appear in unconstrained-port warnings; internal timing results do not prove board-interface timing closure."
+  },
+  "device_map_resources": {
+    "LUT": {
+      "used": 83600,
+      "available": 159800,
+      "reported_percent": 53
+    }
+  },
+  "post_route_resources": {
+    "LUT": {
+      "used": 94405,
+      "available": 159800,
+      "remaining": 65395,
+      "used_percent": 59.08,
+      "derivation": "CLMA LUT 72015 + CLMS LUT 22390; count is post-route, distinct from Device Map LUT 83600."
+    },
+    "FF": {
+      "used": 102259,
+      "available": 319600,
+      "remaining": 217341,
+      "used_percent": 32.0
+    },
+    "DRM": {
+      "used": 267.5,
+      "available": 415,
+      "remaining": 147.5,
+      "used_percent": 64.46
+    },
+    "APM": {
+      "used": 280,
+      "available": 740,
+      "remaining": 460,
+      "used_percent": 37.84
+    },
+    "CLMA": {
+      "used": 22424,
+      "available": 30075,
+      "remaining": 7651,
+      "used_percent": 74.56
+    },
+    "CLMS": {
+      "used": 6864,
+      "available": 9875,
+      "remaining": 3011,
+      "used_percent": 69.51
+    }
+  },
+  "apm_mapping_by_instance": {
+    "u_top_yolo": 207,
+    "u_box_overlay_sync": 72,
+    "gen_roi_cnn.u_classifier": 1,
+    "u_lprnet_top": 0
+  },
+  "candidate_area_optimization": {
+    "status": "not implemented; requires numerical-equivalence checks and PDS mapping comparison",
+    "candidate": "Selectively move LPRNet shift/add multipliers from LUT logic to APM.",
+    "lpr_convolution_pe_instances_from_parameters": 293,
+    "caution": "This count is an RTL instance count, not a measured saving or a guaranteed APM count. Keep room for CPU integration and the future shared fruit/plate detector."
+  },
+  "implemented_fix": [
+    "Register configuration reset completion and synchronize reset release separately in pixel, PE and DDR user domains.",
+    "Synchronize HDMI initialization completion into the pixel domain.",
+    "Group the independent configuration clocks asynchronously after auditing their reset/status crossings; destination-domain reset paths remain timed.",
+    "Balance the max-pool comparator tree across the existing two enabled cycles."
+  ],
+  "validation": {
+    "rtl_regressions": [
+      "max_pool2d",
+      "reset_release_sync",
+      "lprnet_post_process",
+      "char_overlay",
+      "char_overlay_multitarget",
+      "box_crop"
+    ],
+    "roi_regressions": [
+      "capture",
+      "label_overlay",
+      "core_integer_equivalence",
+      "six_frame_720p_integration"
+    ],
+    "reset_integration": "real hdmi_loop and DDR wrapper, explicit inference/IP stubs; stopped/late clocks, reset reassertion, first VS and synchronized HDMI enable",
+    "top_lint": "ROI enabled/disabled with real DDR wrapper/control RTL; convolution layers and vendor IP remain stubs",
+    "pds_rerun": false,
+    "new_bitstream": false,
+    "board_test": false
+  },
+  "reported_failing_paths": [
+    {
+      "Startpoint": "u_lprnet_top/u_layer28/u_input_layer/data_out[101]/opit_0_L6QL5Q_perm/CLK",
+      "Endpoint": "u_lprnet_top/u_layer28/gen_pool.gen_pages[1].u_max_pool2d/reg_max_half1[0]/opit_0_inv_L6Q_perm/I4",
+      "Path Group": "clk_pe",
+      "Path Type": "max (slow corner)",
+      "Path Class": "sequential timing path",
+      "slack_ns": -0.292,
+      "status": "VIOLATED"
+    },
+    {
+      "Startpoint": "u_lprnet_top/u_layer28/u_input_layer/data_out[101]/opit_0_L6QL5Q_perm/CLK",
+      "Endpoint": "u_lprnet_top/u_layer28/gen_pool.gen_pages[1].u_max_pool2d/reg_max_half1[3]/opit_0_inv_L6Q_perm/I2",
+      "Path Group": "clk_pe",
+      "Path Type": "max (slow corner)",
+      "Path Class": "sequential timing path",
+      "slack_ns": -0.226,
+      "status": "VIOLATED"
+    },
+    {
+      "Startpoint": "u_lprnet_top/u_layer28/u_input_layer/data_out[101]/opit_0_L6QL5Q_perm/CLK",
+      "Endpoint": "u_lprnet_top/u_layer28/gen_pool.gen_pages[1].u_max_pool2d/reg_max_half1[8]/opit_0_inv_L6Q_perm/I2",
+      "Path Group": "clk_pe",
+      "Path Type": "max (slow corner)",
+      "Path Class": "sequential timing path",
+      "slack_ns": -0.207,
+      "status": "VIOLATED"
+    },
+    {
+      "Startpoint": "rstn_1ms[4]/opit_0_inv_AQ_perm/CLK",
+      "Endpoint": "u_lprnet_top/u_layer21/u_input_layer/pixel_valid/opit_0/CE",
+      "Path Group": "clk_pe",
+      "Path Type": "max (slow corner)",
+      "Path Class": "sequential timing path",
+      "slack_ns": -4.813,
+      "status": "VIOLATED"
+    },
+    {
+      "Startpoint": "rstn_1ms[4]/opit_0_inv_AQ_perm/CLK",
+      "Endpoint": "u_lprnet_top/u_layer22/u_input_layer/pixel_valid/opit_0/CE",
+      "Path Group": "clk_pe",
+      "Path Type": "max (slow corner)",
+      "Path Class": "sequential timing path",
+      "slack_ns": -4.813,
+      "status": "VIOLATED"
+    },
+    {
+      "Startpoint": "rstn_1ms[4]/opit_0_inv_AQ_perm/CLK",
+      "Endpoint": "u_lprnet_top/u_layer25/u_input_layer/pixel_valid/opit_0/CE",
+      "Path Group": "clk_pe",
+      "Path Type": "max (slow corner)",
+      "Path Class": "sequential timing path",
+      "slack_ns": -4.81,
+      "status": "VIOLATED"
+    },
+    {
+      "Startpoint": "rstn_1ms[4]/opit_0_inv_AQ_perm/CLK",
+      "Endpoint": "b_out_obuf[6]/opit_1/OSR_IOLHR",
+      "Path Group": "pixclk_in",
+      "Path Type": "max (slow corner)",
+      "Path Class": "sequential timing path",
+      "slack_ns": -6.136,
+      "status": "VIOLATED"
+    },
+    {
+      "Startpoint": "rstn_1ms[4]/opit_0_inv_AQ_perm/CLK",
+      "Endpoint": "b_out_obuf[7]/opit_1/OSR_IOLHR",
+      "Path Group": "pixclk_in",
+      "Path Type": "max (slow corner)",
+      "Path Class": "sequential timing path",
+      "slack_ns": -6.043,
+      "status": "VIOLATED"
+    },
+    {
+      "Startpoint": "rstn_1ms[4]/opit_0_inv_AQ_perm/CLK",
+      "Endpoint": "g_out_obuf[0]/opit_1/OSR_IOLHR",
+      "Path Group": "pixclk_in",
+      "Path Type": "max (slow corner)",
+      "Path Class": "sequential timing path",
+      "slack_ns": -5.996,
+      "status": "VIOLATED"
+    },
+    {
+      "Startpoint": "rstn_1ms[4]/opit_0_inv_AQ_perm/CLK",
+      "Endpoint": "u_lprnet_top/u_layer30/gen_conv.u_output_layer/new_line_pipe[438]/opit_0_inv_srl/RS",
+      "Path Group": "clk_pe",
+      "Path Type": "max (slow corner)",
+      "Path Class": "async timing path",
+      "slack_ns": -9.233,
+      "status": "VIOLATED"
+    },
+    {
+      "Startpoint": "rstn_1ms[4]/opit_0_inv_AQ_perm/CLK",
+      "Endpoint": "u_lprnet_top/u_layer30/gen_conv.u_output_layer/new_line_pipe[440]/opit_0_inv_srl/RS",
+      "Path Group": "clk_pe",
+      "Path Type": "max (slow corner)",
+      "Path Class": "async timing path",
+      "slack_ns": -9.233,
+      "status": "VIOLATED"
+    },
+    {
+      "Startpoint": "rstn_1ms[4]/opit_0_inv_AQ_perm/CLK",
+      "Endpoint": "u_lprnet_top/u_layer30/gen_conv.u_output_layer/new_line_pipe[442]/opit_0_inv_srl/RS",
+      "Path Group": "clk_pe",
+      "Path Type": "max (slow corner)",
+      "Path Class": "async timing path",
+      "slack_ns": -9.233,
+      "status": "VIOLATED"
+    },
+    {
+      "Startpoint": "rstn_1ms[4]/opit_0_inv_AQ_perm/CLK",
+      "Endpoint": "u_ddr_video_delay_sync/wr_beat_data[52]/opit_0_inv/RS",
+      "Path Group": "pixclk_in",
+      "Path Type": "max (slow corner)",
+      "Path Class": "async timing path",
+      "slack_ns": -7.295,
+      "status": "VIOLATED"
+    },
+    {
+      "Startpoint": "rstn_1ms[4]/opit_0_inv_AQ_perm/CLK",
+      "Endpoint": "u_ddr_video_delay_sync/wr_beat_data[148]/opit_0_inv/RS",
+      "Path Group": "pixclk_in",
+      "Path Type": "max (slow corner)",
+      "Path Class": "async timing path",
+      "slack_ns": -7.295,
+      "status": "VIOLATED"
+    },
+    {
+      "Startpoint": "rstn_1ms[4]/opit_0_inv_AQ_perm/CLK",
+      "Endpoint": "u_ddr_video_delay_sync/wr_beat_shift[148]/opit_0_inv/RS",
+      "Path Group": "pixclk_in",
+      "Path Type": "max (slow corner)",
+      "Path Class": "async timing path",
+      "slack_ns": -7.295,
+      "status": "VIOLATED"
+    }
+  ]
+}

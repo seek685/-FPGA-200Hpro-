@@ -39,64 +39,63 @@ module max_pool2d #(
     assign output_valid      = valid_delay[1];
 
     // =============================================================
-    // 2. 第一级流水线：将数据分为两半，分别求最大值并寄存 (Cycle 1)
+    // 2. 平衡比较树，平均分配到原有的两个流水级 (Cycle 1)
     // =============================================================
-    localparam HALF_ROW = PE_ROW_NUM / 2;
-    
-    logic [DATA_WIDTH-1:0] comb_max_half0;
-    logic [DATA_WIDTH-1:0] comb_max_half1;
-    int i;
-    // 组合逻辑求两半区最大值
-    always_comb begin
-        // 前半区
-        comb_max_half0 = data[0];
-        for (i = 1; i < HALF_ROW; i++) begin
-            if (data[i] > comb_max_half0) begin
-                comb_max_half0 = data[i];
-            end
-        end
-        
-        // 后半区 (兼容 PE_ROW_NUM == 1 的特殊情况)
-        if (PE_ROW_NUM > 1) begin
-            comb_max_half1 = data[HALF_ROW];
-            for (i = HALF_ROW + 1; i < PE_ROW_NUM; i++) begin
-                if (data[i] > comb_max_half1) begin
-                    comb_max_half1 = data[i];
+    // The former five-element half used four serial compare/mux operations.
+    // For the actual 3x3 pool, this tree uses at most two comparisons in
+    // either cycle, while preserving latency, clk_en and control alignment.
+    // Values are unsigned, so unused leaves can be padded with zero.
+    localparam int TREE_LEVELS = (PE_ROW_NUM > 1) ? $clog2(PE_ROW_NUM) : 0;
+    localparam int GROUP_SIZE = 1 << ((TREE_LEVELS + 1) / 2);
+    localparam int GROUP_COUNT = 1 << (TREE_LEVELS / 2);
+
+    logic [DATA_WIDTH-1:0] group_max [0:GROUP_COUNT-1];
+    generate
+        for (genvar group_idx = 0; group_idx < GROUP_COUNT; group_idx = group_idx + 1) begin : gen_groups
+            for (genvar node = 1; node < 2*GROUP_SIZE; node = node + 1) begin : gen_tree
+                wire [DATA_WIDTH-1:0] value;
+                if (node >= GROUP_SIZE) begin : gen_leaf
+                    if (group_idx*GROUP_SIZE + node-GROUP_SIZE < PE_ROW_NUM) begin : gen_data
+                        assign value = data[group_idx*GROUP_SIZE + node-GROUP_SIZE];
+                    end else begin : gen_padding
+                        assign value = '0;
+                    end
+                end else begin : gen_compare
+                    assign value = (gen_tree[2*node].value > gen_tree[2*node+1].value) ?
+                                    gen_tree[2*node].value : gen_tree[2*node+1].value;
                 end
             end
-        end else begin
-            comb_max_half1 = data[0]; // 如果只有1个元素，两半相等
+            always_ff @(posedge clk or negedge rst_n) begin
+                if (!rst_n)
+                    group_max[group_idx] <= '0;
+                else if (clk_en)
+                    group_max[group_idx] <= gen_tree[1].value;
+            end
         end
-    end
-
-    logic [DATA_WIDTH-1:0] reg_max_half0;
-    logic [DATA_WIDTH-1:0] reg_max_half1;
-
-    // 第一级寄存器
-    always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            reg_max_half0 <= '0;
-            reg_max_half1 <= '0;
-        end else if (clk_en) begin
-            reg_max_half0 <= comb_max_half0;
-            reg_max_half1 <= comb_max_half1;
-        end
-    end
+    endgenerate
 
     // =============================================================
-    // 3. 第二级流水线：比较两个半区的最大值，输出最终结果 (Cycle 2)
+    // 3. 第二级流水线：平衡合并各组最大值 (Cycle 2)
     // =============================================================
     logic [DATA_WIDTH-1:0] reg_max_final;
+
+    generate
+        for (genvar node = 1; node < 2*GROUP_COUNT; node = node + 1) begin : gen_final_tree
+            wire [DATA_WIDTH-1:0] value;
+            if (node >= GROUP_COUNT) begin : gen_leaf
+                assign value = group_max[node-GROUP_COUNT];
+            end else begin : gen_compare
+                assign value = (gen_final_tree[2*node].value > gen_final_tree[2*node+1].value) ?
+                                gen_final_tree[2*node].value : gen_final_tree[2*node+1].value;
+            end
+        end
+    endgenerate
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             reg_max_final <= '0;
         end else if (clk_en) begin
-            if (reg_max_half0 > reg_max_half1) begin
-                reg_max_final <= reg_max_half0;
-            end else begin
-                reg_max_final <= reg_max_half1;
-            end
+            reg_max_final <= gen_final_tree[1].value;
         end
     end
 

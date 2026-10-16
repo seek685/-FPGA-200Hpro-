@@ -992,3 +992,13 @@ define_attribute {p:vs_out} {PAP_IO_REGISTER} {TRUE}
 
 # Board system oscillator: 27 MHz.
 create_clock -name {sys_clk} [get_ports {sys_clk}] -period {37.037} -waveform {0.000 18.5185}
+
+# The 27 MHz board oscillator and its inferred 10 MHz HDMI configuration
+# clock are asynchronous to HDMI pixel/PE clocks. Audited crossings are
+# cfg_reset_done -> reset_release_sync (video, PE and DDR user logic),
+# init_over -> init_over_video_sync, and the DDR IP's reset request.
+# Apply this grouping only with the corresponding reset/CDC RTL changes.
+# Keep all destination-domain reset recovery/removal paths timed.
+# In PDS Report Timing, verify this group contains both clocks below and
+# that no unmatched-clock warning is emitted. PE/pixel periods are unchanged.
+set_clock_groups -name cfg_async -asynchronous -group [get_clocks {sys_clk sys_clk|u_ms72/u_gpll/CLKOUT0_Inferred}]

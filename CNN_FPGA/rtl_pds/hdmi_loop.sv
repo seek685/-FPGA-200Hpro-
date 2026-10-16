@@ -111,6 +111,10 @@ module hdmi_loop #(
     wire                        rx_rst_n   ;  
     wire                        clk_pe     ;
     reg  [15:0]                 rstn_1ms   ;
+    reg                         cfg_reset_done = 1'b0;
+    wire                        rst_n_video;
+    wire                        rst_n_pe;
+    (* syn_preserve = 1 *) reg [1:0] init_over_video_sync = 2'b00;
     // --- 视频流两级打拍 (用于边缘检测与同步) ---
     reg                         vs_in_dly1, vs_in_dly2;
     reg                         hs_in_dly1, hs_in_dly2;
@@ -201,8 +205,8 @@ module hdmi_loop #(
     assign pixclk_out = pixclk_in;
     assign led_int    = char_seen_latch;
 
-    always_ff @(posedge clk_pe or negedge rstn_out) begin
-        if (!rstn_out) begin
+    always_ff @(posedge clk_pe or negedge rst_n_pe) begin
+        if (!rst_n_pe) begin
             char_seen_latch <= 1'b0;
         end else if (lprnet_out_valid) begin
             char_seen_latch <= 1'b1;
@@ -242,9 +246,14 @@ module hdmi_loop #(
     );
 
     always @(posedge cfg_clk or negedge rst_n) begin
-        if(!rst_n || !locked)
+        if(!rst_n || !locked) begin
             rstn_1ms <= 16'd0;
+            cfg_reset_done <= 1'b0;
+        end
         else begin
+            // Register the counter decode before it leaves the cfg clock
+            // domain, so counter transitions cannot glitch an async reset.
+            cfg_reset_done <= (rstn_1ms == 16'h2710);
             if(rstn_1ms == 16'h2710)
                 rstn_1ms <= rstn_1ms;
             else
@@ -252,17 +261,33 @@ module hdmi_loop #(
         end
     end
 
-    assign rstn_out = (rstn_1ms == 16'h2710);
+    assign rstn_out = cfg_reset_done;
+
+    reset_release_sync u_video_reset_sync (
+        .clk(pixclk_out), .arst_n(rstn_out), .rst_n(rst_n_video)
+    );
+    reset_release_sync u_pe_reset_sync (
+        .clk(clk_pe), .arst_n(rstn_out), .rst_n(rst_n_pe)
+    );
+
+    // HDMI configuration completes in cfg_clk; only the synchronized level
+    // may enable the pixel-clock output registers.
+    always_ff @(posedge pixclk_out or negedge rst_n_video) begin
+        if (!rst_n_video)
+            init_over_video_sync <= 2'b00;
+        else
+            init_over_video_sync <= {init_over_video_sync[0], init_over};
+    end
 
 
     // =========================================================
     // 2. 业务级帧同步复位 (App Reset) 
     // =========================================================
-    // 采用稳定复位rstn_out，并确保复位后等待第一个完整场同步才释放
+    // 各时钟域同步释放复位后，等待第一个完整场同步再释放业务层。
     
     // Video 域业务复位
-    always_ff @(posedge pixclk_out or negedge rstn_out) begin
-        if (!rstn_out) begin
+    always_ff @(posedge pixclk_out or negedge rst_n_video) begin
+        if (!rst_n_video) begin
             rst_n_app_video <= 1'b0;
             vs_video_d1     <= 1'b0;
         end else begin
@@ -274,8 +299,8 @@ module hdmi_loop #(
     end
 
     // PE 域业务复位
-    always_ff @(posedge clk_pe or negedge rstn_out) begin
-        if (!rstn_out) begin
+    always_ff @(posedge clk_pe or negedge rst_n_pe) begin
+        if (!rst_n_pe) begin
             vs_pe_sync   <= 3'b0;
             rst_n_app_pe <= 1'b0;
         end else begin
@@ -291,7 +316,7 @@ module hdmi_loop #(
     // 3. HDMI 视频输入信号打拍与 FIFO 写入
     // =========================================================
     always @(posedge pixclk_out) begin
-        if (!rstn_out) begin
+        if (!rst_n_video) begin
             vs_in_dly1 <= 0; vs_in_dly2 <= 0;
             hs_in_dly1 <= 0; hs_in_dly2 <= 0;
             de_in_dly1 <= 0; de_in_dly2 <= 0;
@@ -305,8 +330,8 @@ module hdmi_loop #(
         end
     end 
     
-    always @(posedge pixclk_out or negedge rstn_out) begin
-        if(!rstn_out) begin
+    always @(posedge pixclk_out or negedge rst_n_video) begin
+        if(!rst_n_video) begin
             hdmi_fifo_wr_en <= 1'b0;
             hdmi_fifo_data_wr <= 32'd0;
         end else begin
@@ -546,7 +571,7 @@ module hdmi_loop #(
     ) u_lprnet_top (
         .clk             (clk_pe),
         .clk_en          (1'b1),
-        .rst_n           (rstn_out), 
+        .rst_n           (rst_n_pe),
         
         .new_line_input_1(lprnet_new_line),
         .data_input_valid(lprnet_data_valid),
@@ -659,7 +684,7 @@ module hdmi_loop #(
     // =========================================================
     // 与官方 HDMI loop 例程相同，在像素时钟域同步寄存数据及控制信号。
     always @(posedge pixclk_out) begin
-        if (!rstn_out || !init_over) begin
+        if (!rst_n_video || !init_over_video_sync[1]) begin
             vs_out <= 1'b0;
             hs_out <= 1'b0;
             de_out <= 1'b0;

@@ -19,6 +19,10 @@
         )
         (_widget wgt_my_design_src
             (_input
+                (_file "../rtl_pds/reset_release_sync.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T15:42:09")
+                )
                 (_file "../rtl_pds/roi_cnn/roi_capture_28.sv"
                     (_format verilog)
                     (_timespec "2026-10-15T21:23:05")
