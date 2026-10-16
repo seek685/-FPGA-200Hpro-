@@ -50,26 +50,33 @@ module max_pool2d #(
     localparam int GROUP_COUNT = 1 << (TREE_LEVELS / 2);
 
     logic [DATA_WIDTH-1:0] group_max [0:GROUP_COUNT-1];
+    // Keep tree nodes in module-scope arrays. PDS ADS cannot resolve the
+    // indexed generate-scope references used by the former gen_tree.value.
+    // Each group owns 2*GROUP_SIZE nodes; node zero is unused.
+    wire [DATA_WIDTH-1:0] group_tree_value [0:GROUP_COUNT*2*GROUP_SIZE-1];
+    genvar group_idx, node;
     generate
-        for (genvar group_idx = 0; group_idx < GROUP_COUNT; group_idx = group_idx + 1) begin : gen_groups
-            for (genvar node = 1; node < 2*GROUP_SIZE; node = node + 1) begin : gen_tree
-                wire [DATA_WIDTH-1:0] value;
+        for (group_idx = 0; group_idx < GROUP_COUNT; group_idx = group_idx + 1) begin : gen_groups
+            localparam int GROUP_BASE = group_idx * 2 * GROUP_SIZE;
+            assign group_tree_value[GROUP_BASE] = '0;
+            for (node = 1; node < 2*GROUP_SIZE; node = node + 1) begin : gen_tree
                 if (node >= GROUP_SIZE) begin : gen_leaf
                     if (group_idx*GROUP_SIZE + node-GROUP_SIZE < PE_ROW_NUM) begin : gen_data
-                        assign value = data[group_idx*GROUP_SIZE + node-GROUP_SIZE];
+                        assign group_tree_value[GROUP_BASE+node] = data[group_idx*GROUP_SIZE + node-GROUP_SIZE];
                     end else begin : gen_padding
-                        assign value = '0;
+                        assign group_tree_value[GROUP_BASE+node] = '0;
                     end
                 end else begin : gen_compare
-                    assign value = (gen_tree[2*node].value > gen_tree[2*node+1].value) ?
-                                    gen_tree[2*node].value : gen_tree[2*node+1].value;
+                    assign group_tree_value[GROUP_BASE+node] =
+                        (group_tree_value[GROUP_BASE+2*node] > group_tree_value[GROUP_BASE+2*node+1]) ?
+                         group_tree_value[GROUP_BASE+2*node] : group_tree_value[GROUP_BASE+2*node+1];
                 end
             end
             always_ff @(posedge clk or negedge rst_n) begin
                 if (!rst_n)
                     group_max[group_idx] <= '0;
                 else if (clk_en)
-                    group_max[group_idx] <= gen_tree[1].value;
+                    group_max[group_idx] <= group_tree_value[GROUP_BASE+1];
             end
         end
     endgenerate
@@ -78,15 +85,18 @@ module max_pool2d #(
     // 3. 第二级流水线：平衡合并各组最大值 (Cycle 2)
     // =============================================================
     logic [DATA_WIDTH-1:0] reg_max_final;
+    wire [DATA_WIDTH-1:0] final_tree_value [0:2*GROUP_COUNT-1];
+    assign final_tree_value[0] = '0;
+    genvar final_node;
 
     generate
-        for (genvar node = 1; node < 2*GROUP_COUNT; node = node + 1) begin : gen_final_tree
-            wire [DATA_WIDTH-1:0] value;
-            if (node >= GROUP_COUNT) begin : gen_leaf
-                assign value = group_max[node-GROUP_COUNT];
+        for (final_node = 1; final_node < 2*GROUP_COUNT; final_node = final_node + 1) begin : gen_final_tree
+            if (final_node >= GROUP_COUNT) begin : gen_leaf
+                assign final_tree_value[final_node] = group_max[final_node-GROUP_COUNT];
             end else begin : gen_compare
-                assign value = (gen_final_tree[2*node].value > gen_final_tree[2*node+1].value) ?
-                                gen_final_tree[2*node].value : gen_final_tree[2*node+1].value;
+                assign final_tree_value[final_node] =
+                    (final_tree_value[2*final_node] > final_tree_value[2*final_node+1]) ?
+                     final_tree_value[2*final_node] : final_tree_value[2*final_node+1];
             end
         end
     endgenerate
@@ -95,7 +105,7 @@ module max_pool2d #(
         if (!rst_n) begin
             reg_max_final <= '0;
         end else if (clk_en) begin
-            reg_max_final <= gen_final_tree[1].value;
+            reg_max_final <= final_tree_value[1];
         end
     end
 

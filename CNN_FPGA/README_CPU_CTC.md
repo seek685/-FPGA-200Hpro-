@@ -4,6 +4,16 @@
 
 CPU 保留五级流水线、4096 项 PHT、512 项 BTB、转发和 load-use 检测。原始目录未改动；移植副本位于 `rtl_pds/cpu/core`，源文件 SHA256 与改动说明见 [cpu_import.json](rtl_pds/cpu/cpu_import.json)。移植新增访存请求有效信号与流水线整体暂停，使用时钟使能逻辑保持流水级、寄存器写回、预测历史与训练的一致性，没有生成门控时钟。原 Vivado PLL/IROM/BRAM 和开发板外设未搬入 Pango 工程。
 
+## PDS Compile 的池化层兼容性补丁
+
+Windows PDS Compile 报告 `max_pool2d.sv` 的 `gen_tree.value` / `gen_final_tree.value` 层级名无法解析（Verilog-4123）。现已将树节点移到模块作用域的一维数组，用常量索引连接，消除对 generate 实例层级的引用；比较树结构、两拍使能周期、无符号比较和异步复位保持原语义。
+
+补丁通过 `tb_max_pool2d` 的 7 种窗口/位宽配置回归，覆盖每个输入成为最大值、最高位、相等值、时钟停顿及拍间复位。Linux 环境没有 PDS，本补丁的 PDS Compile 结果仍需 Windows 更新后重跑确认：
+
+```bash
+python3 CNN_FPGA/tests/run_rtl_tests.py --test tb_max_pool2d
+```
+
 ## 本轮实现的协同路径
 
 ```text
@@ -99,18 +109,14 @@ python3 CNN_FPGA/tests/run_cpu_tests.py
 
 实验分支默认 `CPU_CTC_ENABLE=1`、`ROI_CNN_ENABLE=0`。设 `CPU_CTC_ENABLE=0` 可恢复硬件 CTC；原 `main@55d904d` 保留原功能。17 个 CPU RTL 文件及 ROM 搜索路径已加入 `prj_pds/hdmi_loop.pds`，ROM 为 `rtl_pds/cpu/lpr_ctc.mem`。未修改 FDC、引脚、HDMI、DDR 时钟或网络权重。
 
-本次实验分支已提交到本地；远端推送因现有凭据无写入权限/缺失而未完成。可使用随本次交付的 `FPGA_CPU_CTC_20261016.bundle` 增量包，在新的 Windows 目录导入，保留旧构建。将 bundle 放入下载目录后运行：
+实验分支已发布到远端。使用新的 Windows 目录保留旧构建：
 
 ```powershell
 cd D:\0-contest
-git clone --branch main https://github.com/seek685/-FPGA-200Hpro-.git FPGA_200Hpro_CPU_CTC
-cd FPGA_200Hpro_CPU_CTC
-git bundle verify "$HOME\Downloads\FPGA_CPU_CTC_20261016.bundle"
-git fetch "$HOME\Downloads\FPGA_CPU_CTC_20261016.bundle" "refs/heads/feature/cpu-lpr-ctc:refs/heads/feature/cpu-lpr-ctc"
-git switch feature/cpu-lpr-ctc
+git clone --single-branch --branch feature/cpu-lpr-ctc https://github.com/seek685/-FPGA-200Hpro-.git FPGA_200Hpro_CPU_CTC
 ```
 
-增量包以前置提交 `55d904d` 为基础，因此需先取得上述 main 仓库，不能把 bundle 当作独立完整仓库 clone。远端分支正式发布后也可直接 clone 该分支。
+已有该分支副本时，关闭 PDS 后在副本目录运行 `git pull --ff-only origin feature/cpu-lpr-ctc`。早先交付的增量包只是初版快照，后续兼容性补丁以远端分支为准。
 
 打开 `CNN_FPGA/prj_pds/hdmi_loop.pds`，从 Compile 重新运行到 Report Timing；检查 `lpr_ctc.mem` 确实加载、CPU 被实例化，以及完整资源报告。CPU 与邮箱首版直接使用 `clk_pe` 和 `rst_n_app_pe`，没有引入新的时钟域或放宽 `clk_pe=6.500ns` 约束。**该 CPU、预测器、异步取指 ROM 的 Pango 资源映射和频率尚未测得**，不能用本轮仿真或此前旧分支的 LUT 余量承诺可布通/达频。若不达频，应依据实际路径选择流水调整或独立 CPU 时钟及 CDC。
 
