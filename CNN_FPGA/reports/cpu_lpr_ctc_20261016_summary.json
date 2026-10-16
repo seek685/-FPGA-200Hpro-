@@ -1,0 +1,252 @@
+{
+  "date": "2026-10-16",
+  "branch": "feature/cpu-lpr-ctc",
+  "base_commit": "55d904df4c9e50844f5be99dc059230ead57e5c8",
+  "scope": "User five-stage RV32I CPU plus APB4 and LPR greedy CTC; no cache/CSR/fruit work",
+  "tools": {
+    "verilator": "Verilator 5.020 2024-01-01 rev v5.020",
+    "firmware": {
+      "compiler": "riscv64-unknown-elf-gcc () 10.2.0",
+      "isa": "rv32i",
+      "code_bytes": 116,
+      "rom_bytes": 4096,
+      "rom_sha256": "841d9d6720b4fbcd4381ab8d6f0284c8cf58d885971255b19096cef285711e48",
+      "source_sha256": {
+        "link.ld": "1d56616d643404461e367e8ca3a84a32e2e89e6dc678c40899f926a1bdd44754",
+        "main.c": "847520c7227b9ff451862ce59497cd4fe992cbf0dc8794ccd47db61505629b9b",
+        "start.S": "ea2555a729185560f49decfd562435acc8568ff1dfd33890f0ead05554764343"
+      }
+    }
+  },
+  "cpu_selftest": {
+    "generated_checks": 489,
+    "original_runs": 2,
+    "ported_runs": 2,
+    "original_cycles": 9892,
+    "ported_cycles": 11872,
+    "ported_wait_cycles": 1980,
+    "waits_injected_per_apb_access": [
+      0,
+      7
+    ],
+    "isa_certification": false
+  },
+  "ctc_soc": {
+    "isolated_jobs": 48,
+    "burst_jobs": 32,
+    "accepted": 58,
+    "dropped_whole": 22,
+    "completed_before_reset_test": 58,
+    "isolated_last_token_to_end_cycles": [
+      210,
+      357
+    ],
+    "additional_reset_test": true,
+    "formal_worst_case_bound": false
+  },
+  "real_postprocessing_integration": {
+    "crops": 7,
+    "raw_tokens": 140,
+    "cpu_matches_hardware_ctc": true,
+    "real_osd_confirmation_and_vs_update": true,
+    "cnn_input": "synthetic last-layer output tensors"
+  },
+  "simulations": [
+    {
+      "group": "cpu",
+      "log": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/cpu/tb_cpu_apb/run.log",
+      "sha256": "94b15466832e6ff67452505c1a58e93f91f9fed0e96a7dc2d2595246d266ebd5",
+      "pass_lines": [
+        "PASS APB: setup/access/waits, byte lanes, read alignment, error halt, misalignment, reset cancellation"
+      ]
+    },
+    {
+      "group": "cpu",
+      "log": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/cpu/tb_cpu_core/run.log",
+      "sha256": "1d2c66d3cf3721dd54f79b58ba468d5088d41c0295ec2d1faa66917b7faa3e12",
+      "pass_lines": [
+        "PASS CPU: RV32I ALU/subwords/forwarding/load-use/JAL/JALR/branches, runs=2 cycles=11872 predicted=563 redirects=551 wait_cycles=1980"
+      ]
+    },
+    {
+      "group": "cpu",
+      "log": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/cpu/tb_cpu_core_original/run.log",
+      "sha256": "360d8cb3393dceea826eb3e5b36e9c83f9695e0fdf74caaff55a8076dbc2144d",
+      "pass_lines": [
+        "PASS CPU: RV32I ALU/subwords/forwarding/load-use/JAL/JALR/branches, runs=2 cycles=9892 predicted=563 redirects=551 wait_cycles=0"
+      ]
+    },
+    {
+      "group": "cpu",
+      "log": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/cpu/tb_lpr_cpu_mailbox/run.log",
+      "sha256": "55b3304631e790567a202a3308ad8bc2eda0cefd5e7e99aebbd0796f13b9263f",
+      "pass_lines": [
+        "PASS mailbox: simultaneous push/pop, non-destructive reads, stale/missing/invalid commit rejection, full drop/recovery, output backpressure, malformed input, metadata overflow, reset"
+      ]
+    },
+    {
+      "group": "cpu",
+      "log": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/cpu/tb_lpr_cpu_post/run.log",
+      "sha256": "5ce137377f6dca64bcb410a31651073b46e7eda5a23c297566ca4e39d9d49ada",
+      "pass_lines": [
+        "PASS real LPR post + CPU + OSD: 7 crops/140 tokens, CTC equivalent, padded logits masked, clock-enable stalls, blank/20-char results, paired coordinates and VS atomic display"
+      ]
+    },
+    {
+      "group": "cpu",
+      "log": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/cpu/tb_lpr_cpu_soc/run.log",
+      "sha256": "383af915828fedcfc2a9ce9658d7c96fc2bc1561910b010269c8c71bdbe688af",
+      "pass_lines": [
+        "PASS CPU CTC: 48 isolated + 32 burst jobs, accepted=58 whole_job_drops=22; isolated completion latency=210..357 PE clocks",
+        "PASS CPU CTC reset: pending computation and partial input cancelled; no stale task output"
+      ]
+    },
+    {
+      "group": "base_rtl",
+      "log": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/base_rtl/tb_box_crop.run.log",
+      "sha256": "08251dc702941d34528df05411835545dcafca2c7d07897f930f00c9aef5d99b",
+      "pass_lines": [
+        "PASS boxes/crops: NMS, crop lock, 1:1 and bilinear pixels, edge clipping, video latency, packet overflow"
+      ]
+    },
+    {
+      "group": "base_rtl",
+      "log": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/base_rtl/tb_char_overlay.run.log",
+      "sha256": "e67ca67803073d89f24dad8037e272155b197c6a227870fb2e136913ad0bc8de",
+      "pass_lines": [
+        "PASS OSD: blank/flush association, confirmation, atomic VS update, 8-to-7 replacement, expiry, edge clipping"
+      ]
+    },
+    {
+      "group": "base_rtl",
+      "log": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/base_rtl/tb_char_overlay_multitarget.run.log",
+      "sha256": "a476e8798e35903d8d08ee26cc54cbdf576ca44a2fc7f3fc851a52632724ff32",
+      "pass_lines": [
+        "PASS multitarget OSD: six-slot starvation reproduced; sixteen slots confirm eight stable targets, frame-atomic text and independent expiry"
+      ]
+    },
+    {
+      "group": "base_rtl",
+      "log": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/base_rtl/tb_lprnet_post_process.run.log",
+      "sha256": "198170fbd01490293ced6329f71bd0f752e81dd28301db8abe6ddf1bf83b4f35",
+      "pass_lines": [
+        "PASS CTC: blank boundaries, repeats, last character, padding mask, clock stalls"
+      ]
+    },
+    {
+      "group": "base_rtl",
+      "log": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/base_rtl/tb_max_pool2d.run.log",
+      "sha256": "7a0bdcb5014d7128d2623dd00cff498e98ce74c4665ff28cc8cecac89e4bb222",
+      "pass_lines": [
+        "PASS max_pool2d ROWS=1 WIDTH=1 cycles=2206",
+        "PASS max_pool2d ROWS=2 WIDTH=7 cycles=2206",
+        "PASS max_pool2d ROWS=3 WIDTH=9 cycles=2206",
+        "PASS max_pool2d ROWS=4 WIDTH=8 cycles=2206",
+        "PASS max_pool2d ROWS=9 WIDTH=9 cycles=2206",
+        "PASS max_pool2d ROWS=16 WIDTH=9 cycles=2206",
+        "PASS max_pool2d ROWS=25 WIDTH=12 cycles=2206",
+        "PASS tb_max_pool2d: maximum, two-cycle alignment, stalls and async reset"
+      ]
+    },
+    {
+      "group": "base_rtl",
+      "log": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/base_rtl/tb_reset_release_sync.run.log",
+      "sha256": "8421a294c1d1456788b8baf1c7d4e4d94ca27489cfcfce8131593b00c9dd4a5a",
+      "pass_lines": [
+        "PASS tb_reset_release_sync: independent clocks, stopped clock, short pulses (62 A checks)"
+      ]
+    },
+    {
+      "group": "reset_cpu",
+      "log": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/reset_cpu/run.log",
+      "sha256": "dc02fbcef581c823a4c867572cfa2e5c60c42eb9f3141307343201c40c8ec712",
+      "pass_lines": [
+        "PASS top CPU boot: real RV32I firmware polls APB; reset cancels bus with PE clock stopped",
+        "PASS tb_hdmi_reset: top/DDR reset routing, late clocks, first VS and synchronized HDMI enable"
+      ]
+    },
+    {
+      "group": "reset_bypass",
+      "log": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/reset_bypass/run.log",
+      "sha256": "538f98b4d8d88ba09fbf2820c7cd61f42aefd6a93a8671c4421eb3e1dc355daf",
+      "pass_lines": [
+        "PASS tb_hdmi_reset: top/DDR reset routing, late clocks, first VS and synchronized HDMI enable"
+      ]
+    }
+  ],
+  "top_lint": {
+    "configurations": [
+      {
+        "cpu": 1,
+        "roi": 0
+      },
+      {
+        "cpu": 0,
+        "roi": 0
+      },
+      {
+        "cpu": 0,
+        "roi": 1
+      }
+    ],
+    "scope": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016/top_lint/scope.json",
+    "warnings": {
+      "cpu0_roi0": {
+        "TIMESCALEMOD": 8,
+        "IMPLICIT": 1,
+        "WIDTHEXPAND": 108,
+        "WIDTHTRUNC": 33
+      },
+      "cpu1_roi0": {
+        "TIMESCALEMOD": 8,
+        "IMPLICIT": 1,
+        "WIDTHEXPAND": 109,
+        "WIDTHTRUNC": 33
+      },
+      "cpu0_roi1": {
+        "TIMESCALEMOD": 8,
+        "IMPLICIT": 1,
+        "WIDTHEXPAND": 108,
+        "WIDTHTRUNC": 33
+      }
+    }
+  },
+  "pds_metadata_and_firmware_paths_checked": true,
+  "original_cpu_sources_unchanged": true,
+  "source_sha256": {
+    "rtl_pds/cpu/core/lwc_alu.sv": "891738ee0ef61c9e177cb8c243752e378f4d973a317d3a9f28b2f9f2210c336d",
+    "rtl_pds/cpu/core/lwc_branch_predictor.sv": "fc0ac3980a6329ea5a443068ead8f3d7ec113b0bb9ee48603ccf750856c8132b",
+    "rtl_pds/cpu/core/lwc_branch_unit.sv": "2dca215d64182cb49218290fb900a78165aac95f073685ac58205bee3477ca32",
+    "rtl_pds/cpu/core/lwc_control.sv": "799a01eb09c5b446a9ca6f9f94aad46d6288dde45e9d53b4f342e42864e3f546",
+    "rtl_pds/cpu/core/lwc_cpu.sv": "055aab022780e69632e15e1726f0dd803b2fcca4a69a4d71eca86e6011f93dc2",
+    "rtl_pds/cpu/core/lwc_ex_mem.sv": "8d2b7b4989eabfeecc0f5181657a042b453299635ab0a5e87d306152a65636ea",
+    "rtl_pds/cpu/core/lwc_forwarding.sv": "982fea42d803c25f6e94c46c3927d046ddbf2706846ac3c291d8735e593b5bef",
+    "rtl_pds/cpu/core/lwc_hazard_detection.sv": "7bb5e24ded14c09850b0dca5a4e2a4280e3f8aa7a87c8b6146df02a5f1b0221a",
+    "rtl_pds/cpu/core/lwc_id_ex.sv": "3b763b40451f47c517ff6370345df4a5c6e929fdda126d8717da392ce189dfa6",
+    "rtl_pds/cpu/core/lwc_if_id.sv": "719090f175ed472e3688db987a8794af872405c1dbe6e6ab0cb5da9d17454b96",
+    "rtl_pds/cpu/core/lwc_immgen.sv": "f019cc426de28a9f44408fda79312cae5acc3737eed8042c49ed7adc64fb46c3",
+    "rtl_pds/cpu/core/lwc_mem_wb.sv": "133f667f04061a3729d9ed3f7748c9d1c68833e976a4ab23a3b766836821a8bf",
+    "rtl_pds/cpu/core/lwc_pc.sv": "2e1b8f2c6033c8bcc642caa3508d26ec708d2a8048e8402b9817a85be5d59a6a",
+    "rtl_pds/cpu/core/lwc_regfile.sv": "e20f0c43d06a58782ad4d69bafa74eae7b0736e389dc44d12a5579cb90037c0b",
+    "rtl_pds/cpu/lpr_cpu_mailbox.sv": "3d8ed47d466e3214153c1aa43f23c1e9a449481f73a1d019f47ec4c26367c496",
+    "rtl_pds/cpu/lpr_cpu_soc.sv": "43a69377b151b838d36db45325b5d70408fae0d0279c9514e9c44de30ac666bf",
+    "rtl_pds/cpu/lwc_cpu_apb.sv": "93d5f5baafeb83c7415ec0f08a03537a3950ce4f467b39dd55316e005ddaf519",
+    "rtl_pds/cpu/lpr_ctc.mem": "841d9d6720b4fbcd4381ab8d6f0284c8cf58d885971255b19096cef285711e48",
+    "rtl_pds/hdmi_loop.sv": "bc13220e92731e1bd2deb6668c00a23f74fdd5c42ce00c3dc9baa51a76f2e7b3",
+    "rtl_pds/top_lprnet.sv": "e5bd85859c050fb528ebeef18f2356a848246afdc5a16f9f06721d059ae97270",
+    "rtl_pds/data_process/lprnet_post_process.sv": "5b844fe83d767d6317e2641c63641c52bd5a1b957f5f918ea37c5f1d2458c657",
+    "prj_pds/hdmi_loop.pds": "2f2a12e773542a7772b37a41780891b91bd8395dd0d9cae86019a25971f165dc"
+  },
+  "evidence_directory": "/home/guillotine/LWC/FPGA_reports/cpu_lpr_ctc_20261016",
+  "not_verified": [
+    "PDS Compile/synthesis/place-and-route",
+    "Pango LUT/FF/DRM/APM usage",
+    "timing closure at 6.500 ns clk_pe",
+    "new bitstream/board/camera accuracy",
+    "whole-network convolution simulation",
+    "DDR PHY traffic and video bandwidth",
+    "system inference FPS",
+    "full RV32I compliance/exceptions",
+    "formal worst-case CPU latency"
+  ]
+}

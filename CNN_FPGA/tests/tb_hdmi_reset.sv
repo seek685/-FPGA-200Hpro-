@@ -2,7 +2,7 @@
 
 // Exercise the actual top-level and DDR-wrapper reset wiring. Inference,
 // PLLs, HDMI I2C and the DDR PHY are interface stubs supplied by the runner.
-module tb_hdmi_reset;
+module tb_hdmi_reset #(parameter CPU_CTC_TEST=0);
     logic cfg_clk = 0, pix_clk = 0, pe_clk = 0, ddr_clk = 0;
     logic run_pe = 0, run_ddr = 0, board_reset_n = 1;
     logic cfg_locked = 0, cfg_init = 0, vs = 0;
@@ -13,13 +13,41 @@ module tb_hdmi_reset;
     always #3.25 if (run_pe) pe_clk = ~pe_clk;
     always #4 if (run_ddr) ddr_clk = ~ddr_clk;
 
-    hdmi_loop #(.ROI_CNN_ENABLE(0)) dut (
+    hdmi_loop #(.ROI_CNN_ENABLE(0), .CPU_CTC_ENABLE(CPU_CTC_TEST),
+                .CPU_ROM_FILE("rtl_pds/cpu/lpr_ctc.mem")) dut (
         .sys_clk(cfg_clk), .rst_n(board_reset_n), .rstn_out(rstn_out),
         .pixclk_in(pix_clk), .clk_p(ddr_clk), .clk_n(~ddr_clk),
         .vs_in(vs), .hs_in(1'b0), .de_in(1'b0),
         .r_in(8'b0), .g_in(8'b0), .b_in(8'b0),
         .r_out(r_out), .g_out(g_out), .b_out(b_out)
     );
+
+    logic cpu_checked;
+    generate
+        if (CPU_CTC_TEST) begin : check_cpu
+            logic polled=0;
+            always @(posedge pe_clk)
+                if(dut.rst_n_app_pe && dut.gen_cpu_ctc.u_soc.psel && dut.gen_cpu_ctc.u_soc.penable &&
+                   !dut.gen_cpu_ctc.u_soc.pwrite && dut.gen_cpu_ctc.u_soc.paddr==32'h40000000)
+                    polled<=1;
+            initial begin
+                cpu_checked=0;
+                wait(dut.rst_n_app_pe);
+                repeat(100) @(posedge pe_clk);
+                #0.001;
+                assert(polled && !dut.gen_cpu_ctc.cpu_fault && !dut.gen_cpu_ctc.protocol_fault)
+                    else $fatal(1,"top CPU failed to boot and poll mailbox after first VS");
+                cpu_checked=1;
+                wait(!dut.rst_n_app_pe);
+                #0.001;
+                assert(!dut.gen_cpu_ctc.u_soc.psel && dut.gen_cpu_ctc.cpu_pc==32'h80000000)
+                    else $fatal(1,"stopped-clock reset did not cancel CPU bus/fetch");
+                $display("PASS top CPU boot: real RV32I firmware polls APB; reset cancels bus with PE clock stopped");
+            end
+        end else begin : no_cpu_check
+            initial cpu_checked=1;
+        end
+    endgenerate
 
     initial begin
         force dut.roi_video_rgb = 24'h123456;
@@ -72,6 +100,7 @@ module tb_hdmi_reset;
         assert (dut.rst_n_app_video && dut.rst_n_app_pe)
             else $fatal(1, "first VS did not release application domains");
         @(negedge pix_clk) vs = 0;
+        wait(cpu_checked);
         @(negedge pe_clk) run_pe = 0;
         @(negedge ddr_clk) run_ddr = 0;
         #1 board_reset_n = 0;

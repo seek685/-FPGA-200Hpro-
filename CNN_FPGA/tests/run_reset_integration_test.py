@@ -34,6 +34,7 @@ STUB_DRIVES = {
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--build-dir", type=Path)
+    parser.add_argument("--cpu", action="store_true", help="Also boot the real CPU/firmware and check its reset")
     args = parser.parse_args()
     if not shutil.which("verilator"):
         parser.error("Verilator is required")
@@ -52,8 +53,12 @@ def main():
     stub_file.write_text("\n".join(bodies))
     sources = [RTL / "hdmi_loop.sv", RTL / "reset_release_sync.sv",
                *sorted((RTL / "ddr").glob("*.sv")), *sorted((RTL / "ddr").glob("*.v"))]
+    # Keep definitions available while Verilator resolves hierarchical test
+    # references; CPU_CTC_TEST still controls whether hardware is instantiated.
+    sources += sorted((RTL / "cpu").rglob("*.sv"))
     (build / "scope.json").write_text(json.dumps({
         "real_rtl": [str(p.relative_to(ROOT)) for p in sources],
+        "cpu_enabled": args.cpu,
         "interface_stubs": STUBS,
         "primitive_stub": "GTP_INBUFGDS",
         "test_clock_and_status_drives": STUB_DRIVES,
@@ -61,6 +66,7 @@ def main():
     }, indent=2))
     command = ["verilator", "--binary", "--timing", "--assert", "-Wno-fatal", "-j", "2",
                "--top-module", "tb_hdmi_reset", "--Mdir", str(build / "obj"), "-o", "simulation",
+               f"-GCPU_CTC_TEST={int(args.cpu)}",
                f"-I{RTL}", str(ROOT / "tests/tb_hdmi_reset.sv"),
                *[str(p) for p in sources], str(stub_file)]
     (build / "command.json").write_text(json.dumps(command, indent=2))

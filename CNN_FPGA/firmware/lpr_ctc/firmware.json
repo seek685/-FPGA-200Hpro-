@@ -1,0 +1,12 @@
+{
+  "compiler": "riscv64-unknown-elf-gcc () 10.2.0",
+  "isa": "rv32i",
+  "code_bytes": 116,
+  "rom_bytes": 4096,
+  "rom_sha256": "841d9d6720b4fbcd4381ab8d6f0284c8cf58d885971255b19096cef285711e48",
+  "source_sha256": {
+    "link.ld": "1d56616d643404461e367e8ca3a84a32e2e89e6dc678c40899f926a1bdd44754",
+    "main.c": "847520c7227b9ff451862ce59497cd4fe992cbf0dc8794ccd47db61505629b9b",
+    "start.S": "ea2555a729185560f49decfd562435acc8568ff1dfd33890f0ead05554764343"
+  }
+}

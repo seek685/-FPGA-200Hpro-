@@ -1,5 +1,11 @@
 # 盘古 200Pro+ YOLO 工程适配
 
+## 2026-10-16：五级流水线 CPU 协同实验分支
+
+`feature/cpu-lpr-ctc` 已接入用户提供的五级流水线/分支预测 RV32I CPU，通过 APB 总线执行车牌 CTC 解码，并把结果交给原 OSD。本分支默认 `CPU_CTC_ENABLE=1`、`ROI_CNN_ENABLE=0`，暂不涉及 cache、CSR 或水果识别；原 CPU 上传目录保留不动。仿真与顶层接口检查已完成，PDS 综合、资源/时序和上板尚未验证。
+
+架构、测试证据、寄存器表、固件重建和 Windows 新目录构建步骤见 [CPU 协同实验说明](README_CPU_CTC.md)。下文较早的默认值和验证记录对应各自历史版本，不是本实验分支的 PDS 结果。
+
 ## 2026-10-16：报告分析、复位同步与池化时序修复
 
 已收到并校验 [PDS 报告附件](https://github.com/seek685/-FPGA-200Hpro-/releases/tag/pds-debug-20261016)，ZIP 为 133,810,194 字节，SHA256 与 GitHub 一致、全部 CRC 通过。包内 371 个 RTL 文件在统一换行后与 **`feature/roi-fruit-cnn@dc4e6ee`** 一致；本次实现时间为 10 月 15 日晚，工具为 PDS 2022.2-SP6.1 build 138931。这是旧水果分支的实际构建，不能当成合并后 `main` 的实现结果。结构化证据与路径见 [报告摘要](reports/pds_20261016_summary.json)。

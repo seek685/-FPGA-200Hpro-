@@ -28,7 +28,10 @@ module lprnet_post_process #(
     output logic [$clog2(CYCLE_PERIOD_OUT * PE_COL_NUM)-1:0] out_char         /* synthesis syn_preserve=1 */,
     output logic                                out_valid                     /* synthesis syn_preserve=1 */,
     output logic                                frame_start_out, // Every crop, including all-blank crops
-    output logic                                frame_end_out    // One cycle after the last possible character
+    output logic                                frame_end_out,   // One cycle after the last possible character
+    // Optional CPU interface: every argmax token, including blank; no CTC here.
+    output wire [$clog2(CYCLE_PERIOD_OUT * PE_COL_NUM)-1:0] token_char,
+    output wire token_valid, token_first, token_last
 );
 
     localparam int unsigned CHANNEL_OUT_NUM = CYCLE_PERIOD_OUT * PE_COL_NUM;
@@ -106,6 +109,11 @@ module lprnet_post_process #(
     wire ctc_match = ef_val_valid && (ef_val_out_channel < VALID_CHAR_LIMIT) &&
                      (ef_val_out_channel != BLANK_CHAR_CH) &&
                      (new_frame_flag || (ef_val_out_channel != prefix_char));
+
+    assign token_char = ef_val_out_channel;
+    assign token_valid = rst_n && clk_en && ef_val_valid;
+    assign token_first = token_valid && new_frame_flag;
+    assign token_last = token_valid && (time_step == LAST_TIME_STEP);
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin

@@ -32,7 +32,9 @@ module lprnet_top #(
     output logic [POST_CH_WIDTH-1:0] out_char         /* synthesis syn_preserve=1 */,
     output logic                     out_valid        /* synthesis syn_preserve=1 */,
     output logic                     frame_start_out,
-    output logic                     frame_end_out
+    output logic                     frame_end_out,
+    output wire [POST_CH_WIDTH-1:0] token_char,
+    output wire token_valid, token_first, token_last
 );
 
     logic [PE_COL_NUM_LAYER20-1:0][OUT_WIDTH_LAYER20-1:0] layer_y_out_layer20/*synthesis PAP_MARK_DEBUG="1"*/;
@@ -377,7 +379,9 @@ module lprnet_top #(
         .out_char(out_char),
         .out_valid(out_valid),
         .frame_start_out(frame_start_out),
-        .frame_end_out(frame_end_out)
+        .frame_end_out(frame_end_out),
+        .token_char(token_char), .token_valid(token_valid),
+        .token_first(token_first), .token_last(token_last)
     );
 
 endmodule

@@ -1,5 +1,5 @@
 (_flow fab_demo "2022.2-SP6.1"
-    (_comment "200Hpro plate fixes plus fixed ROI CNN; build state cleared. Run Compile before Synthesize.")
+    (_comment "Experimental user RV32I CPU + APB + LPR CTC; fruit bypassed. Run Compile before Synthesize.")
     (_version "1.1.0")
     (_status "initial")
     (_project 
@@ -19,6 +19,74 @@
         )
         (_widget wgt_my_design_src
             (_input
+                (_file "../rtl_pds/cpu/core/lwc_alu.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T18:58:07")
+                )
+                (_file "../rtl_pds/cpu/core/lwc_branch_predictor.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T19:07:23")
+                )
+                (_file "../rtl_pds/cpu/core/lwc_branch_unit.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T18:58:07")
+                )
+                (_file "../rtl_pds/cpu/core/lwc_control.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T18:58:07")
+                )
+                (_file "../rtl_pds/cpu/core/lwc_cpu.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T18:58:07")
+                )
+                (_file "../rtl_pds/cpu/core/lwc_ex_mem.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T18:58:07")
+                )
+                (_file "../rtl_pds/cpu/core/lwc_forwarding.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T18:58:07")
+                )
+                (_file "../rtl_pds/cpu/core/lwc_hazard_detection.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T18:58:07")
+                )
+                (_file "../rtl_pds/cpu/core/lwc_id_ex.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T18:58:07")
+                )
+                (_file "../rtl_pds/cpu/core/lwc_if_id.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T18:58:07")
+                )
+                (_file "../rtl_pds/cpu/core/lwc_immgen.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T18:58:07")
+                )
+                (_file "../rtl_pds/cpu/core/lwc_mem_wb.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T18:58:07")
+                )
+                (_file "../rtl_pds/cpu/core/lwc_pc.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T18:58:07")
+                )
+                (_file "../rtl_pds/cpu/core/lwc_regfile.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T19:07:23")
+                )
+                (_file "../rtl_pds/cpu/lpr_cpu_mailbox.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T19:07:23")
+                )
+                (_file "../rtl_pds/cpu/lpr_cpu_soc.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T19:00:21")
+                )
+                (_file "../rtl_pds/cpu/lwc_cpu_apb.sv"
+                    (_format verilog)
+                    (_timespec "2026-10-16T18:58:52")
+                )
                 (_file "../rtl_pds/reset_release_sync.sv"
                     (_format verilog)
                     (_timespec "2026-10-16T15:42:09")
@@ -547,7 +615,7 @@
         (_command cmd_compile
             (_gci_state (_integer 0))
             (_option top_module (_string "hdmi_loop"))
-            (_option include_path (_string "../rtl_pds	../rtl_pds/data_process/header	../rtl_pds/data_process/mem_data	../rtl_pds/roi_cnn	"))
+            (_option include_path (_string "../rtl_pds	../rtl_pds/data_process/header	../rtl_pds/data_process/mem_data	../rtl_pds/roi_cnn	../rtl_pds/cpu	"))
             (_option system_verilog (_switch ON))
         )
         (_widget wgt_rtl_view

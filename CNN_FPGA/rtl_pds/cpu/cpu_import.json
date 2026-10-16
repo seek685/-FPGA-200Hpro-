@@ -1,0 +1,26 @@
+{
+  "source_directory": "12-pipeline-cpu-branch-predictor-original-irom",
+  "source_sha256": {
+    "myCPU.sv": "d46588ebc269beb68ae4584b15041b5a48d74a3f55df050e96c3d70b1a705aa1",
+    "pc.sv": "ab0d44cbea12bf683d7e76985f723bd81254d95ff0c537ae9175dafd4650c81e",
+    "if_id.sv": "21875843b7571fa81b8fcc441fdd49140c506929a15dfde546974a0e0eeab4ef",
+    "id_ex.sv": "30c95c3839ebee7fb9af1da8fae9ff63a6e04963a7aee6b6a6210d76cefc0d5c",
+    "ex_mem.sv": "d16f9fedf931310aeea59934c7048b8157a6f1b2a3dc698302f569304e2ca7ce",
+    "mem_wb.sv": "ce3530a56c29325ff07c65da5616ce4948d68cd4677c34f672ab4b98d3bda3b9",
+    "regfile.sv": "1aa8c5bd29a8a309bbe898260c60710681e45ad1930d46ee65b4fb51bcd15461",
+    "alu.sv": "aab7d325e18a76bf1c75da0567bfe74048f49b8fbc6036043c9ea5003126dd68",
+    "immgen.sv": "bc581989163df3da787994643a7f5693bf80dd9c4242d8fe8719db5b6df8fc61",
+    "control.sv": "3335b46681a19c7e95d4d781a3b29b7c0723ced854d482f93d9ba265b11024cf",
+    "branch_unit.sv": "833701b43ccb97906482a01bfa4bea530f378f1cc6da310bece772cd3aa9e1d7",
+    "hazard_detection.sv": "809c22dd3db00a829575c8f9160e1e961aff87ef5d8358afd284dfb7972d63c7",
+    "forwarding.sv": "54b058875dbb180c406aa63cea7acfccc7e18026842cbffb2d4ecbda221b5b11",
+    "branch_predictor.sv": "86024b0fa1f9f28be95e811f426876ee1dd6271cca7f8b8af6c8ad2a7cfc4d65"
+  },
+  "adaptations": [
+    "Namespace core modules with lwc_",
+    "Add full-pipeline hold and explicit memory request valid for a waiting bus",
+    "Gate predictor training/recovery and register retirement during bus waits",
+    "Move loop-variable declarations outside for initializers for PDS ADS compatibility"
+  ],
+  "unmodified_original_directory": true
+}

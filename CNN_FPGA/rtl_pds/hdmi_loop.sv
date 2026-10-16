@@ -27,7 +27,10 @@ module hdmi_loop #(
     parameter   OSD_MAX_PLATES = 16,
     parameter   OSD_CONFIRM_RESULTS = 2,
     parameter   OSD_HOLD_FRAMES = 6,
-    parameter   ROI_CNN_ENABLE = 1
+    // Experimental branch defaults: CPU CTC enabled, fruit branch bypassed.
+    parameter   CPU_CTC_ENABLE = 1,
+    parameter   CPU_ROM_FILE = "lpr_ctc.mem",
+    parameter   ROI_CNN_ENABLE = 0
 )(
     input  wire       sys_clk       , // 200Pro+ system clock 27MHz
     input  wire       rst_n         ,  
@@ -196,6 +199,11 @@ module hdmi_loop #(
     logic                        lprnet_out_valid/*synthesis PAP_MARK_DEBUG="1"*/;
     logic                        lprnet_frame_start/*synthesis PAP_MARK_DEBUG="1"*/;
     logic                        lprnet_frame_end;
+    wire [6:0] lpr_hw_char, lpr_token_char;
+    wire lpr_hw_valid, lpr_hw_start, lpr_hw_end;
+    wire lpr_token_valid, lpr_token_first, lpr_token_last;
+    wire [15:0] osd_result_x, osd_result_y;
+    wire osd_result_new_line;
     logic                        char_seen_latch/*synthesis PAP_MARK_DEBUG="1"*/;
 
 
@@ -577,18 +585,46 @@ module hdmi_loop #(
         .data_input_valid(lprnet_data_valid),
         .data_input      (lprnet_data_in),
         
-        .out_char        (lprnet_out_char),
-        .out_valid       (lprnet_out_valid),
-        .frame_start_out (lprnet_frame_start),
-        .frame_end_out   (lprnet_frame_end)
+        .out_char        (lpr_hw_char),
+        .out_valid       (lpr_hw_valid),
+        .frame_start_out (lpr_hw_start),
+        .frame_end_out   (lpr_hw_end),
+        .token_char(lpr_token_char), .token_valid(lpr_token_valid),
+        .token_first(lpr_token_first), .token_last(lpr_token_last)
     );
 
+    generate
+        if (CPU_CTC_ENABLE != 0) begin : gen_cpu_ctc
+            wire cpu_fault, protocol_fault;
+            wire [31:0] accepted_jobs, dropped_jobs, completed_jobs, result_id, cpu_pc;
+            lpr_cpu_soc #(.ROM_FILE(CPU_ROM_FILE), .CROP_HEIGHT(CROP_HEIGHT)) u_soc (
+                .clk(clk_pe), .rst_n(rst_n_app_pe),
+                .crop_new_line(lprnet_new_line), .crop_x(crop_x_min_out), .crop_y(crop_y_min_out),
+                .token_valid(lpr_token_valid), .token_first(lpr_token_first),
+                .token_last(lpr_token_last), .token_char(lpr_token_char),
+                .result_coord_valid(osd_result_new_line), .result_x(osd_result_x), .result_y(osd_result_y),
+                .result_id(result_id), .frame_start(lprnet_frame_start), .char_valid(lprnet_out_valid),
+                .frame_end(lprnet_frame_end), .out_char(lprnet_out_char),
+                .cpu_fault(cpu_fault), .protocol_fault(protocol_fault),
+                .accepted_jobs(accepted_jobs), .dropped_jobs(dropped_jobs),
+                .completed_jobs(completed_jobs), .debug_pc(cpu_pc)
+            );
+        end else begin : gen_hardware_ctc
+            assign lprnet_out_char = lpr_hw_char;
+            assign lprnet_out_valid = lpr_hw_valid;
+            assign lprnet_frame_start = lpr_hw_start;
+            assign lprnet_frame_end = lpr_hw_end;
+            assign osd_result_x = crop_x_min_out;
+            assign osd_result_y = crop_y_min_out;
+            assign osd_result_new_line = lprnet_new_line;
+        end
+    endgenerate
 
     // =========================================================
     // 7. 视频级 OSD: 字符叠加模块与最终显示 (Char Overlay)
     // =========================================================
     char_overlay #(
-        .CROP_HEIGHT(CROP_HEIGHT),
+        .CROP_HEIGHT((CPU_CTC_ENABLE != 0) ? 1 : CROP_HEIGHT),
         .CHAR_NUM(76),
         .IMG_WIDTH(IMG_COL_LAYER0),
         .IMG_HEIGHT(IMG_ROW_LAYER0),
@@ -617,9 +653,9 @@ module hdmi_loop #(
         .clk_pe      (clk_pe),
         .rst_n_pe    (rst_n_app_pe),    
         
-        .x_min_in    (crop_x_min_out),
-        .y_min_in    (crop_y_min_out),
-        .new_line_1  (lprnet_new_line),
+        .x_min_in    (osd_result_x),
+        .y_min_in    (osd_result_y),
+        .new_line_1  (osd_result_new_line),
         
         .out_char    (lprnet_out_char),
         .out_valid   (lprnet_out_valid),
