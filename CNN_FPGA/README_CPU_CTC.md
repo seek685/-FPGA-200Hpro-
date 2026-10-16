@@ -99,12 +99,18 @@ python3 CNN_FPGA/tests/run_cpu_tests.py
 
 实验分支默认 `CPU_CTC_ENABLE=1`、`ROI_CNN_ENABLE=0`。设 `CPU_CTC_ENABLE=0` 可恢复硬件 CTC；原 `main@55d904d` 保留原功能。17 个 CPU RTL 文件及 ROM 搜索路径已加入 `prj_pds/hdmi_loop.pds`，ROM 为 `rtl_pds/cpu/lpr_ctc.mem`。未修改 FDC、引脚、HDMI、DDR 时钟或网络权重。
 
-使用新的 Windows 目录保留旧构建：
+本次实验分支已提交到本地；远端推送因现有凭据无写入权限/缺失而未完成。可使用随本次交付的 `FPGA_CPU_CTC_20261016.bundle` 增量包，在新的 Windows 目录导入，保留旧构建。将 bundle 放入下载目录后运行：
 
 ```powershell
 cd D:\0-contest
-git clone --single-branch --branch feature/cpu-lpr-ctc https://github.com/seek685/-FPGA-200Hpro-.git FPGA_200Hpro_CPU_CTC
+git clone --branch main https://github.com/seek685/-FPGA-200Hpro-.git FPGA_200Hpro_CPU_CTC
+cd FPGA_200Hpro_CPU_CTC
+git bundle verify "$HOME\Downloads\FPGA_CPU_CTC_20261016.bundle"
+git fetch "$HOME\Downloads\FPGA_CPU_CTC_20261016.bundle" "refs/heads/feature/cpu-lpr-ctc:refs/heads/feature/cpu-lpr-ctc"
+git switch feature/cpu-lpr-ctc
 ```
+
+增量包以前置提交 `55d904d` 为基础，因此需先取得上述 main 仓库，不能把 bundle 当作独立完整仓库 clone。远端分支正式发布后也可直接 clone 该分支。
 
 打开 `CNN_FPGA/prj_pds/hdmi_loop.pds`，从 Compile 重新运行到 Report Timing；检查 `lpr_ctc.mem` 确实加载、CPU 被实例化，以及完整资源报告。CPU 与邮箱首版直接使用 `clk_pe` 和 `rst_n_app_pe`，没有引入新的时钟域或放宽 `clk_pe=6.500ns` 约束。**该 CPU、预测器、异步取指 ROM 的 Pango 资源映射和频率尚未测得**，不能用本轮仿真或此前旧分支的 LUT 余量承诺可布通/达频。若不达频，应依据实际路径选择流水调整或独立 CPU 时钟及 CDC。
 
