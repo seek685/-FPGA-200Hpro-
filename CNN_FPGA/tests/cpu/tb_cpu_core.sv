@@ -10,6 +10,10 @@ module tb_cpu_core;
     wire bus_hold;
     integer cycles=0, predicted=0, redirects=0, waits=0, runs=0;
     logic [31:0] host_value=0;
+    logic [1:0] saved_pht[0:4095];
+    logic saved_btb_valid[0:511];
+    logic [20:0] saved_btb_tag[0:511];
+    logic [31:0] saved_btb_target[0:511];
     assign instr=rom[pc[15:2]];
 `ifdef ORIGINAL_CPU
     assign bus_hold=0;
@@ -87,15 +91,46 @@ module tb_cpu_core;
     initial begin
         $readmemh("selftest.mem",rom);
         for(int i=0;i<1024;i++) ram[i]=0;
+        // Observe every entry after time-zero initialization has settled.
+        #1;
+        for(int i=0;i<4096;i++)
+            if(dut.u_branch_predictor.pht_q[i]!==2'b01)
+                $fatal(1,"PHT cold initialization failed at entry %0d",i);
+        for(int i=0;i<512;i++)
+            if(dut.u_branch_predictor.btb_valid_q[i]!==1'b0)
+                $fatal(1,"BTB cold initialization failed at entry %0d",i);
         repeat(2) begin
             rst_n=0; host_value=0;
-            repeat(5) @(negedge clk); rst_n=1;
+            repeat(5) @(negedge clk);
+            if(dut.u_branch_predictor.ghr_q!==12'd0)
+                $fatal(1,"GHR not cleared by reset");
+            if(runs!=0) begin
+                for(int i=0;i<4096;i++)
+                    if(dut.u_branch_predictor.pht_q[i]!==saved_pht[i])
+                        $fatal(1,"PHT changed across warm reset at entry %0d",i);
+                for(int i=0;i<512;i++) begin
+                    if(dut.u_branch_predictor.btb_valid_q[i]!==saved_btb_valid[i])
+                        $fatal(1,"BTB valid changed across warm reset at entry %0d",i);
+                    if(saved_btb_valid[i] &&
+                       {dut.u_branch_predictor.btb_tag_q[i],dut.u_branch_predictor.btb_target_q[i]}
+                       !== {saved_btb_tag[i],saved_btb_target[i]})
+                        $fatal(1,"BTB target/tag changed across warm reset at entry %0d",i);
+                end
+            end
+            rst_n=1;
             wait(host_value!=0);
             if(host_value!=1) $fatal(1,"CPU selftest failed case %0d pc=%h",host_value>>1,pc);
             repeat(8) @(negedge clk);
+            for(int i=0;i<4096;i++) saved_pht[i]=dut.u_branch_predictor.pht_q[i];
+            for(int i=0;i<512;i++) begin
+                saved_btb_valid[i]=dut.u_branch_predictor.btb_valid_q[i];
+                saved_btb_tag[i]=dut.u_branch_predictor.btb_tag_q[i];
+                saved_btb_target[i]=dut.u_branch_predictor.btb_target_q[i];
+            end
             runs++;
         end
         if(predicted==0 || redirects==0) $fatal(1,"predictor paths not exercised");
+        $display("PASS predictor: all 4096 PHT / 512 BTB initial states, GHR reset, trained tables retained across warm reset");
         $display("PASS CPU: RV32I ALU/subwords/forwarding/load-use/JAL/JALR/branches, runs=%0d cycles=%0d predicted=%0d redirects=%0d wait_cycles=%0d",
                  runs,cycles,predicted,redirects,waits);
         $finish;

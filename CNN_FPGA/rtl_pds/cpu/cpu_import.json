@@ -20,7 +20,8 @@
     "Namespace core modules with lwc_",
     "Add full-pipeline hold and explicit memory request valid for a waiting bus",
     "Gate predictor training/recovery and register retirement during bus waits",
-    "Move loop-variable declarations outside for initializers for PDS ADS compatibility"
+    "Move loop-variable declarations outside for initializers for PDS ADS compatibility",
+    "Initialize four PHT entries per iteration to keep the 4096-entry table within PDS ADS's 2000-iteration loop limit; preserve cold state and warm-reset retention"
   ],
   "unmodified_original_directory": true
 }

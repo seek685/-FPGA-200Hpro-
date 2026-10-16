@@ -4,7 +4,7 @@
 
 CPU 保留五级流水线、4096 项 PHT、512 项 BTB、转发和 load-use 检测。原始目录未改动；移植副本位于 `rtl_pds/cpu/core`，源文件 SHA256 与改动说明见 [cpu_import.json](rtl_pds/cpu/cpu_import.json)。移植新增访存请求有效信号与流水线整体暂停，使用时钟使能逻辑保持流水级、寄存器写回、预测历史与训练的一致性，没有生成门控时钟。原 Vivado PLL/IROM/BRAM 和开发板外设未搬入 Pango 工程。
 
-## PDS Compile 的池化层兼容性补丁
+## PDS Compile 兼容性补丁
 
 Windows PDS Compile 报告 `max_pool2d.sv` 的 `gen_tree.value` / `gen_final_tree.value` 层级名无法解析（Verilog-4123）。现已将树节点移到模块作用域的一维数组，用常量索引连接，消除对 generate 实例层级的引用；比较树结构、两拍使能周期、无符号比较和异步复位保持原语义。
 
@@ -12,6 +12,15 @@ Windows PDS Compile 报告 `max_pool2d.sv` 的 `gen_tree.value` / `gen_final_tre
 
 ```bash
 python3 CNN_FPGA/tests/run_rtl_tests.py --test tb_max_pool2d
+```
+
+后续 Windows 日志中的新错误是 `lwc_branch_predictor.sv` 的 `Verilog-4092: Loop limit 2000 exceeded`：原 PHT 初始化循环执行 4096 次，超过当前 ADS 解析设置。现改为每次初始化相邻 4 项，默认只循环 1024 次；仍使用完整的 4096 项 PHT，每项初始值仍为 `2'b01`，BTB 初始化与热复位保留训练结果的行为不变。没有缩减预测表或修改工程的循环限制。
+
+补丁已通过原 CPU 和移植 CPU 的 489 项自测（各执行两遍），新增逐项检查全部 4096 项 PHT、512 项 BTB 的初始状态、热复位保留训练表及清空 GHR；CPU CTC 协同与计算中复位测试也通过。Windows PDS Compile 仍需更新后重跑，不能用 Verilator 结果代替 PDS 综合验证。
+
+```bash
+python3 CNN_FPGA/tests/run_cpu_tests.py --test core
+python3 CNN_FPGA/tests/run_cpu_tests.py --test soc
 ```
 
 ## 本轮实现的协同路径

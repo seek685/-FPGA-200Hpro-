@@ -45,12 +45,21 @@ module lwc_branch_predictor #(
     logic [PC_WIDTH-1:0]        if_btb_target;
     logic                       if_ghr_update_valid;
 
+    // PDS ADS defaults to a 2000-iteration loop limit. Initialize four
+    // counters per iteration (1024 iterations for the full 4096-entry PHT).
+    // This only changes elaboration; the table and its power-up state stay
+    // unchanged. Guard the last group for sizes not divisible by four.
+    localparam PHT_INIT_GROUPS = (PHT_ENTRIES + 3) / 4;
     integer init_btb, init_pht;
     initial begin
         for(init_btb=0;init_btb<BTB_ENTRIES;init_btb=init_btb+1)
         btb_valid_q[init_btb]=1'b0;
-        for(init_pht=0;init_pht<PHT_ENTRIES;init_pht=init_pht+1)
-        pht_q[init_pht]=2'b01;
+        for(init_pht=0;init_pht<PHT_INIT_GROUPS;init_pht=init_pht+1) begin
+            pht_q[4*init_pht]=2'b01;
+            if(4*init_pht+1<PHT_ENTRIES) pht_q[4*init_pht+1]=2'b01;
+            if(4*init_pht+2<PHT_ENTRIES) pht_q[4*init_pht+2]=2'b01;
+            if(4*init_pht+3<PHT_ENTRIES) pht_q[4*init_pht+3]=2'b01;
+        end
     end
 
     logic [BTB_INDEX_WIDTH-1:0] ex_btb_index;
