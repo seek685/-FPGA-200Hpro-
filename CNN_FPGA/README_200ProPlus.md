@@ -1,5 +1,21 @@
 # 盘古 200Pro+ YOLO 工程适配
 
+## 2026-10-16：收集本地时序违例报告
+
+本地反馈合并工程存在时序违例，目前尚未收到对应综合、布局布线和时序报告，未确定违例路径或原因。远程仓库中的 2026-10-09 Compile 日志不能用于判断这次构建。先在本次工程运行布局布线后的 Report Timing，保存报告并关闭 PDS；不要先清理构建目录、覆盖 RTL 或更新代码。
+
+`tools/collect_pds_debug.ps1` 会复制本地实际使用的整个 `prj_pds`、`rtl_pds`，连同 Git 提交号、未提交差异、文件时间清单生成 ZIP；不会修改原工程，也不会替你运行 PDS。包内包含构建数据库，可能较大。若尚未更新到包含脚本的提交，可以只下载脚本后打包，避免改变失败构建对应的源码：
+
+```powershell
+cd D:\0-contest\FPGA_200Hpro_RO
+Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/seek685/-FPGA-200Hpro-/main/CNN_FPGA/tools/collect_pds_debug.ps1" -OutFile "$env:TEMP\collect_pds_debug.ps1"
+powershell -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\collect_pds_debug.ps1" -ProjectDir ".\CNN_FPGA" -OutputDir "$HOME\Downloads"
+```
+
+需要报告能覆盖：布局布线后的 Setup/Hold 汇总及最差路径（起点、终点、时钟、slack、逻辑/布线延迟）、时钟与未约束路径、LUT/FF/DRM/APM 资源、工具版本及完整警告。若报告只在界面中显示，请导出到 `prj_pds` 后再打包。
+
+下一阶段目标已改为摄像头拍摄“打印苹果图片 + 打印车牌”，目标可在画面不同位置。现有水果模型只支持固定区域分类，不具备苹果坐标预测。全画面检测需要带边界框的训练数据、检测模型、定点导出、类别分流及实测验证；目前没有生成或验证这样的检测模型。不能把固定框移动、按位置显示标签或现有分类准确率当作全画面检测结果。先根据实际报告处理时序并确认资源余量，再确定检测改造方案。
+
 ## 2026-10-15：主分支合并车牌修复与固定区域水果分类
 
 当前使用 `main`。水果分类最初在 `feature/roi-fruit-cnn` 上基于板级适配提交 `4706536` 开发；现已将该功能及 PDS 文件条目修复 `dc4e6ee` 合入主分支，同时保留主线 `20678cd`、`1034ac8` 的车牌裁剪、候选框抑制、CTC、字符稳定显示、16 目标文字容量和 PDS 语法兼容修复。YOLO/LPRNet 权重、HDMI/DDR 和引脚继续沿用原工程。
