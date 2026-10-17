@@ -1,0 +1,25 @@
+Reading pref.tcl
+
+# 2020.1
+
+# vsim -c -onfinish stop -l transcript.log work.tb_board_mmio "+COREMARK=0" -do "onbreak {quit -code 1}; onerror {quit -code 1}; run -all; quit -code 0" 
+# Start time: 14:09:29 on Oct 17,2026
+# Loading sv_std.std
+# Loading work.tb_board_mmio
+# Loading work.board_mmio
+# Loading work.board_dram
+# Loading work.uart_tx
+# Loading work.serial_uart_monitor
+# onbreak {quit -code 1}
+#  Warning: onbreak command for use within macro
+#  onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  run -all
+# PASS tb_board_mmio checks=34 uart_bytes=1
+# ** Note: $finish    : D:/0-contest/riscv32-boardtest-200pro/tests/tb_board_mmio.sv(114)
+#    Time: 1786 ns  Iteration: 0  Instance: /tb_board_mmio
+# Break in Module tb_board_mmio at D:/0-contest/riscv32-boardtest-200pro/tests/tb_board_mmio.sv line 114
+# Stopped at D:/0-contest/riscv32-boardtest-200pro/tests/tb_board_mmio.sv line 114
+#  quit -code 0
+# End time: 14:09:30 on Oct 17,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0

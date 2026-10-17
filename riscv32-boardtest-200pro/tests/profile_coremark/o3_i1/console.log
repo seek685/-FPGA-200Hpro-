@@ -1,0 +1,66 @@
+Reading pref.tcl
+
+# 2020.1
+
+# vsim -c -onfinish stop -l transcript.log work.tb_profile -do "run -all; quit -code 0" 
+# Start time: 15:23:03 on Oct 17,2026
+# Loading sv_std.std
+# Loading work.tb_profile
+# Loading work.cpu_soc
+# Loading work.myCPU
+# Loading work.pc
+# Loading work.alu
+# Loading work.ctrl
+# Loading work.control
+# Loading work.alu_decoder
+# Loading work.regfile
+# Loading work.immgen
+# Loading work.branch_unit
+# Loading work.if_id
+# Loading work.id_ex
+# Loading work.ex_mem
+# Loading work.mem_wb
+# Loading work.forwarding
+# Loading work.hazard_detection
+# Loading work.branch_predictor
+# Loading work.board_irom
+# Loading work.board_mmio
+# Loading work.board_dram
+# Loading work.uart_tx
+# Loading work.serial_uart_monitor
+# run -all
+# UART: 
+# UART: CPU BOARD TEST
+# UART: CPU_HZ=120000000
+# UART: SMOKE PASS checksum=0x24924939
+# UART: COREMARK ITERATIONS=1
+# UART: TIMER_MAX_SECONDS=35.791394
+# UART: Please wait; UART is outside the timed region.
+# PROFILE cycles=839082 retired=736464 stalls=20534 branch_wrong=41004 jalr_wrong=38 id_jal_correct=0
+# UART: 2K performance run parameters for coremark.
+# UART: CoreMark Size    : 666
+# UART: Total ticks      : 839082
+# UART: Total time (secs): 0.006992
+# UART: Iterations/Sec   : 143.013436
+# UART: ERROR! Must execute for at least 10 secs for a valid result!
+# UART: Iterations       : 1
+# UART: Compiler version : GCC 15.2.0
+# UART: Compiler flags   : -O3 -march=rv32i -mabi=ilp32 -mno-relax -msmall-data-limit=0
+# UART: Memory location  : on-chip RAM
+# UART: seedcrc          : 0xe9f5
+# UART: [0]crclist       : 0xe714
+# UART: [0]crcmatrix     : 0x1fd7
+# UART: [0]crcstate      : 0x8e3a
+# UART: [0]crcfinal      : 0xe714
+# UART: Errors detected
+# UART: CPU cycles       : 839082
+# UART: CoreMark/MHz not reported: duration below 10 seconds.
+# UART: COREMARK DONE
+# PASS tb_profile cycles=839082 retired=736464
+# ** Note: $finish    : D:/0-contest/riscv32-boardtest-200pro/tests/profile_coremark/tb_profile.sv(151)
+#    Time: 9778996 ns  Iteration: 1  Instance: /tb_profile
+# Break in Module tb_profile at D:/0-contest/riscv32-boardtest-200pro/tests/profile_coremark/tb_profile.sv line 151
+# Stopped at D:/0-contest/riscv32-boardtest-200pro/tests/profile_coremark/tb_profile.sv line 151
+#  quit -code 0
+# End time: 15:24:12 on Oct 17,2026, Elapsed time: 0:01:09
+# Errors: 0, Warnings: 0

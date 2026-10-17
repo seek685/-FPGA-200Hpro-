@@ -1,0 +1,51 @@
+{
+  "build": "coremark120_board_v2",
+  "device": "PG2L200H",
+  "speed_grade": "-6",
+  "package": "FBB676",
+  "cpu_hz": 120000000,
+  "iterations": 3000,
+  "timing_all_constraints_met": true,
+  "slow_setup_slack_ns": 0.169,
+  "slow_hold_slack_ns": 0.147,
+  "fast_hold_slack_ns": 0.1,
+  "hierarchy_lut": 10187,
+  "ff": 1778,
+  "drm": 16,
+  "gpll": 1,
+  "io": 3,
+  "frozen_input_count": 23,
+  "frozen_and_current_hashes_match": true,
+  "simulation_input_hashes_match": true,
+  "simulation_input_count": 128,
+  "test_results": [
+    {
+      "test": "Mmio",
+      "result": "PASS",
+      "detail": "PASS tb_board_mmio checks=34 uart_bytes=1"
+    },
+    {
+      "test": "Uart",
+      "result": "PASS",
+      "detail": "PASS tb_uart_nominal divisor=1041 uart_bytes=4"
+    },
+    {
+      "test": "Reset",
+      "result": "PASS",
+      "detail": "PASS tb_board_reset checks=6 release_cycles=34"
+    },
+    {
+      "test": "Smoke",
+      "result": "PASS",
+      "detail": "PASS tb_cpu_soc mode=0 cycles=16243 uart_bytes=91"
+    },
+    {
+      "test": "CoreMarkSmoke",
+      "result": "PASS",
+      "detail": "PASS tb_cpu_soc mode=1 cycles=977171 uart_bytes=801"
+    }
+  ],
+  "bitstream_bytes": 9188552,
+  "bitstream_sha256": "DFEF9BBA402D7A42A7EA7021F7833E2FD2E64E2592975071D44B568698DDD6E0",
+  "physical_board_run": "User supplied UART output on 2026-10-17: 3000 iterations, 2500779626 cycles, 20.839830 seconds, Correct operation validated; 143.955108 CoreMark; 1.199626 CoreMark/MHz. Source: board_result_user.txt."
+}

@@ -1,0 +1,34 @@
+Independent O3 compiler experiment
+==================================
+Reproduce from project root:
+  .\tests\profile_coremark\build_o3.ps1
+
+Production firmware, production build artifacts, and RTL are not modified.
+The experiment copies the current firmware source into source_o3/. Official
+algorithm files are unchanged; the port's printed compiler option changes
+from O2 to O3 so that the UART report identifies the experiment accurately.
+The compiler invocation differs only in -O3 versus -O2 (and source/output
+paths). Memory layout, ISA RV32I, ABI ILP32, CPU_HZ=120000000, iterations=1,
+other compiler/linker options, and hardware remain the same.
+
+Image: build_coremark_o3_i1_hz120000000/rom.hex
+Metadata, including ELF/HEX SHA256 and complete flags: build_info.json there.
+The HEX contains 8192 words and fits the unchanged 32 KiB ROM.
+
+Static observations (not a dynamic speed estimate):
+                    O2 i1      O3 i1
+.text bytes         25888      27292
+.rodata bytes        2828       2704
+ROM binary bytes    28732      30016
+.data + .bss bytes   2288       2288
+
+O3 inlines matrix_mul_vect/matrix_mul_matrix/matrix_mul_matrix_bitextract into
+matrix_test. The resulting matrix_test retains five static __mulsi3 call sites.
+The RV32I software multiplication algorithm is still required. Static helper
+call counts and code sizes cannot establish the dynamic cycle fraction or
+the resulting CoreMark speed. Use the identical SoC simulation to compare
+timed iteration cycles and official CRCs before drawing conclusions.
+
+Both one-iteration runs intentionally fail the official >=10-second condition;
+they are compiler/performance experiments and do not constitute a formal
+CoreMark score. Production default 3000-iteration image remains untouched.

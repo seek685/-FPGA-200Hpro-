@@ -1,0 +1,220 @@
+{
+  "checked_at": "2026-10-17T10:30:04.7724385+08:00",
+  "original": "D:\\0_FPGA\\12-pipeline-cpu-branch-predictor-original-irom",
+  "copy": "D:\\0-contest\\riscv32-performance",
+  "selected_implementation": "final_rev3_pds",
+  "regression_manifest": "tests/final_selected_rtl_sha256.json",
+  "sv_file_count": 23,
+  "original_directory_count": 0,
+  "all_original_unchanged": true,
+  "all_current_match_regression": true,
+  "files": [
+    {
+      "file": "alu.sv",
+      "original_sha256": "CA34D4433CAD08D5B5592BCBBB22BCEEFDA6F24BC9BC50B251AAD029D8169DF3",
+      "baseline_sha256": "CA34D4433CAD08D5B5592BCBBB22BCEEFDA6F24BC9BC50B251AAD029D8169DF3",
+      "optimized_sha256": "CA34D4433CAD08D5B5592BCBBB22BCEEFDA6F24BC9BC50B251AAD029D8169DF3",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "branch_predictor.sv",
+      "original_sha256": "BF1949E819BE29ADB4B0EC0A37392526B5A442DBD3F79DDE463A26386E15104D",
+      "baseline_sha256": "BF1949E819BE29ADB4B0EC0A37392526B5A442DBD3F79DDE463A26386E15104D",
+      "optimized_sha256": "44C971823C8EBC2E0BA4F6670A3FCBE0B9DFB8EE6A5D41618C1EDB73F27BA49B",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": true
+    },
+    {
+      "file": "branch_unit.sv",
+      "original_sha256": "ECADD7C31ACE9B28F80E8DC251DA81FDF145AC9528A21C9ADE4E3E1A379F1069",
+      "baseline_sha256": "ECADD7C31ACE9B28F80E8DC251DA81FDF145AC9528A21C9ADE4E3E1A379F1069",
+      "optimized_sha256": "9124FCA78645444B8D080C872AD807A5700728723F4A80E69675BF03F07CF74F",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": true
+    },
+    {
+      "file": "control.sv",
+      "original_sha256": "CEB46C695E8686B0820B4D7D83B48F7B7B3197B7019528EAB6F8B3EF00013DF9",
+      "baseline_sha256": "CEB46C695E8686B0820B4D7D83B48F7B7B3197B7019528EAB6F8B3EF00013DF9",
+      "optimized_sha256": "CEB46C695E8686B0820B4D7D83B48F7B7B3197B7019528EAB6F8B3EF00013DF9",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "counter.sv",
+      "original_sha256": "2973A9C739127269B312CC9A1D762DC77225A87731DEF7E683A4E66115DF5CE9",
+      "baseline_sha256": "2973A9C739127269B312CC9A1D762DC77225A87731DEF7E683A4E66115DF5CE9",
+      "optimized_sha256": "2973A9C739127269B312CC9A1D762DC77225A87731DEF7E683A4E66115DF5CE9",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "display_seg.sv",
+      "original_sha256": "9353DF124DDD18B020E304D26B1263FA8042BEB32516AB2D5FB0FBD526EB88F8",
+      "baseline_sha256": "9353DF124DDD18B020E304D26B1263FA8042BEB32516AB2D5FB0FBD526EB88F8",
+      "optimized_sha256": "9353DF124DDD18B020E304D26B1263FA8042BEB32516AB2D5FB0FBD526EB88F8",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "dram_driver.sv",
+      "original_sha256": "77A82C3A990E93176EEF77B1B4443A9FF043AD96B268FF876DDA17E9E2EC4211",
+      "baseline_sha256": "77A82C3A990E93176EEF77B1B4443A9FF043AD96B268FF876DDA17E9E2EC4211",
+      "optimized_sha256": "77A82C3A990E93176EEF77B1B4443A9FF043AD96B268FF876DDA17E9E2EC4211",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "ex_mem.sv",
+      "original_sha256": "EA7EE83A221A18F5B500C1C5B58AB572E674F9EEF49B2B13335B5BF0A9946872",
+      "baseline_sha256": "EA7EE83A221A18F5B500C1C5B58AB572E674F9EEF49B2B13335B5BF0A9946872",
+      "optimized_sha256": "EA7EE83A221A18F5B500C1C5B58AB572E674F9EEF49B2B13335B5BF0A9946872",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "forwarding.sv",
+      "original_sha256": "FA5B9D0BC99D3706BEA742F7590660DD0CFD72179883A04C875C7686DBE75495",
+      "baseline_sha256": "FA5B9D0BC99D3706BEA742F7590660DD0CFD72179883A04C875C7686DBE75495",
+      "optimized_sha256": "FA5B9D0BC99D3706BEA742F7590660DD0CFD72179883A04C875C7686DBE75495",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "hazard_detection.sv",
+      "original_sha256": "5782D347744EA1050E0E47804D1C4C15D0A94A6C905891C6CD05A4C5792ED3C2",
+      "baseline_sha256": "5782D347744EA1050E0E47804D1C4C15D0A94A6C905891C6CD05A4C5792ED3C2",
+      "optimized_sha256": "DF1CDE518A8AC5FBE8B30D443AFE2AAF5F7F8DDFE50CE1BDAFC42BA03C0F9955",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": true
+    },
+    {
+      "file": "id_ex.sv",
+      "original_sha256": "593B42047E6809728732A490A8B963530DA34F6BF29BE6D11217FFCD7E3CE26E",
+      "baseline_sha256": "593B42047E6809728732A490A8B963530DA34F6BF29BE6D11217FFCD7E3CE26E",
+      "optimized_sha256": "EA39D79B23942AD5DC418B80FD2A0C55AA7CFC41B8A7D5D82370FC206256A3FD",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": true
+    },
+    {
+      "file": "if_id.sv",
+      "original_sha256": "B61C05F9C38FAB414E986770320B0695C8351CFB50DB76AF63BAF013645F3965",
+      "baseline_sha256": "B61C05F9C38FAB414E986770320B0695C8351CFB50DB76AF63BAF013645F3965",
+      "optimized_sha256": "CF8FC13ADF2309765EF3CAF36CC02D3B5154AF76BD938948F3A96E205AE6BB35",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": true
+    },
+    {
+      "file": "immgen.sv",
+      "original_sha256": "B1A28A4F3FBEF6A5C108A2759C516CF0C94BBBE2648DF71451C271AED2B774A4",
+      "baseline_sha256": "B1A28A4F3FBEF6A5C108A2759C516CF0C94BBBE2648DF71451C271AED2B774A4",
+      "optimized_sha256": "B1A28A4F3FBEF6A5C108A2759C516CF0C94BBBE2648DF71451C271AED2B774A4",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "mem_wb.sv",
+      "original_sha256": "C0A6D26CEB7E8E9C4404C0A9AFAC50F6378998C29841080E8495B3287B59524A",
+      "baseline_sha256": "C0A6D26CEB7E8E9C4404C0A9AFAC50F6378998C29841080E8495B3287B59524A",
+      "optimized_sha256": "C0A6D26CEB7E8E9C4404C0A9AFAC50F6378998C29841080E8495B3287B59524A",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "myCPU.sv",
+      "original_sha256": "CA4C787F33F432D81B917D12BD96AF93C10F1461571B07C5A57F84B2E8A9DF6B",
+      "baseline_sha256": "CA4C787F33F432D81B917D12BD96AF93C10F1461571B07C5A57F84B2E8A9DF6B",
+      "optimized_sha256": "858C212B442404B82F010C881AFEA4DC584ACAA078C5CFCC94E6FBCD62F700B1",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": true
+    },
+    {
+      "file": "pc.sv",
+      "original_sha256": "93DB1E40D8BBACFD8B734F8D6C3E138165F11729D2901DEA025A82E577542542",
+      "baseline_sha256": "93DB1E40D8BBACFD8B734F8D6C3E138165F11729D2901DEA025A82E577542542",
+      "optimized_sha256": "93DB1E40D8BBACFD8B734F8D6C3E138165F11729D2901DEA025A82E577542542",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "perip_bridge.sv",
+      "original_sha256": "5D08C4A68B4BB991D94CAFCD2DD1727CF1D020E3F0852B388E139D27084C737A",
+      "baseline_sha256": "5D08C4A68B4BB991D94CAFCD2DD1727CF1D020E3F0852B388E139D27084C737A",
+      "optimized_sha256": "5D08C4A68B4BB991D94CAFCD2DD1727CF1D020E3F0852B388E139D27084C737A",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "regfile.sv",
+      "original_sha256": "A3BB4EDD5471D8DC1764767C2A4EB9EBD69BBACC80E019468E677C0C70E44A05",
+      "baseline_sha256": "A3BB4EDD5471D8DC1764767C2A4EB9EBD69BBACC80E019468E677C0C70E44A05",
+      "optimized_sha256": "74A5C1BA27558EE7584554C4AD9069849F5D56DA9F5108FC013717D00748128B",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": true
+    },
+    {
+      "file": "seg7.sv",
+      "original_sha256": "C5E98B9A7B46A5C88358386A116EAE5FFDCE215208ADD9CD6DFE4DB4DE054987",
+      "baseline_sha256": "C5E98B9A7B46A5C88358386A116EAE5FFDCE215208ADD9CD6DFE4DB4DE054987",
+      "optimized_sha256": "C5E98B9A7B46A5C88358386A116EAE5FFDCE215208ADD9CD6DFE4DB4DE054987",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "student_top.sv",
+      "original_sha256": "8F31936F945692A186652B39889C0BE9324C8D89716B8CC509345BB25E31A7D4",
+      "baseline_sha256": "8F31936F945692A186652B39889C0BE9324C8D89716B8CC509345BB25E31A7D4",
+      "optimized_sha256": "8F31936F945692A186652B39889C0BE9324C8D89716B8CC509345BB25E31A7D4",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "top.sv",
+      "original_sha256": "5FCC6125526FCDF1E359B2490690C1E72A022F72BE9BEBD3481FFC20E5E0D08A",
+      "baseline_sha256": "5FCC6125526FCDF1E359B2490690C1E72A022F72BE9BEBD3481FFC20E5E0D08A",
+      "optimized_sha256": "5FCC6125526FCDF1E359B2490690C1E72A022F72BE9BEBD3481FFC20E5E0D08A",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "twin_controller.sv",
+      "original_sha256": "335A1382AF40BB28684168899059FBD8CAB3C167D8FE5700BB3290A66B34CB75",
+      "baseline_sha256": "335A1382AF40BB28684168899059FBD8CAB3C167D8FE5700BB3290A66B34CB75",
+      "optimized_sha256": "335A1382AF40BB28684168899059FBD8CAB3C167D8FE5700BB3290A66B34CB75",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    },
+    {
+      "file": "uart.sv",
+      "original_sha256": "50EB7BEA5A678F855132FE01E50507EFAC0ECEA2964F6C31153666D281097FD1",
+      "baseline_sha256": "50EB7BEA5A678F855132FE01E50507EFAC0ECEA2964F6C31153666D281097FD1",
+      "optimized_sha256": "50EB7BEA5A678F855132FE01E50507EFAC0ECEA2964F6C31153666D281097FD1",
+      "original_unchanged": true,
+      "regression_matches_current": true,
+      "changed": false
+    }
+  ]
+}

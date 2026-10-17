@@ -1,0 +1,63 @@
+Firmware build and status
+=========================
+Build from project directory (PowerShell):
+  .\scripts\build_firmware.ps1
+  .\scripts\build_firmware.ps1 -Iterations 1 -CpuHz 120000000
+Optional toolchain selection: -ToolchainBin <path-to-riscv-none-elf-gcc.exe-directory>
+
+Images are separate per configuration, with ELF/BIN/HEX/map/disassembly/size and
+build_info.json recording CPU frequency, iterations, ROM size, and SHA256.
+ROM HEX is exactly 8192 lines, one little-endian 32-bit memory word per line.
+The binary contains executable text, ROM constants, and the RAM .data load image.
+Do not initialize RAM separately from an old simulation HEX; startup copies
+the .data image from ROM and clears .bss, including after a button reset.
+
+Defaults:
+  build_smoke_hz120000000\rom.hex:            11868 ROM bytes
+  build_coremark_i1_hz120000000\rom.hex:       28732 ROM bytes
+  build_coremark_i3000_hz120000000\rom.hex:    28748 ROM bytes
+  CoreMark .data + .bss:                      2288 RAM bytes
+The linker requires at least 8 KiB of additional stack space in the 64 KiB RAM.
+
+Expected smoke output (CRLF line endings):
+  CPU BOARD TEST
+  CPU_HZ=120000000
+  SMOKE PASS checksum=0x24924939
+  UART PASS
+  SMOKE DONE
+The smoke selftest checks initialized data and zeroed BSS, a 64-word arithmetic
+checksum, normal words, byte/half writes, signed and unsigned byte/half loads.
+
+CoreMark also runs this selftest first. It then prints iteration count and timer
+range, followed by the official report. Official performance seeds are 0,0,0x66,
+TOTAL_DATA_SIZE=2000, one context, static on-chip RAM. Official reference CRCs:
+  seedcrc=e9f5, crclist=e714, crcmatrix=1fd7, crcstate=8e3a.
+For a one-iteration build crcfinal is e714. crcfinal for longer runs can differ.
+
+One-iteration simulation intentionally reports:
+  ERROR! Must execute for at least 10 secs for a valid result!
+  Errors detected
+This is expected only for the smoke configuration; it is not an official score.
+The normal 3000-iteration board run must print:
+  Correct operation validated. See README.md for run and reporting rules.
+  CoreMark 1.0 : <measured iterations per second> / ...
+  CoreMark/MHz     : <measured score divided by configured MHz>
+  COREMARK DONE
+Any CRC error, smoke failure, or timer overflow invalidates the run. The terminal
+line COREMARK DONE means reporting is complete; it does not independently prove
+the official CRC/time checks passed.
+
+Timing uses the hardware cycle counter for the timed iterate() region only.
+No UART printing occurs during that region. The counter freezes before result
+formatting, so software floating point and serial output do not affect score.
+CPU_HZ must match the real generated CPU clock. The formal 3000-iteration image
+is estimated to take about 21 seconds at 120 MHz; this is only a wait-time guide.
+32-bit wrap limit is 35.79 seconds at 120 MHz. An overflow returns zero ticks to
+the official report and prints TIMER OVERFLOW: INVALID RESULT. Reduce iterations
+and rebuild if overflow occurs, while retaining an actual duration >=10 seconds.
+
+Compile validation completed: GCC 15.2.0, RV32I/ILP32 -O2, no warnings/errors.
+Official-source hash comparison: all 8 copied files unchanged.
+HEX validation: all images exactly 8192 words, prefix equals binary byte for
+byte, unused ROM bytes all zero. SoC simulation/upboard status is documented by
+the parent project's board validation report, not inferred from compilation.

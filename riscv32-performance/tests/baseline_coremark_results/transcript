@@ -1,0 +1,36 @@
+# vsim -c work.tb_cpu_regression "+MAX_CYCLES=3000000" "+EXPECTED_SEG=c04e0005" "+IMEM=D:/0-contest/riscv32-performance/tests/baseline_coremark_results/coremark.hex" "+DMEM=D:/0-contest/riscv32-performance/tests/baseline_coremark_results/coremark_data.hex" "+TRACE=D:/0-contest/riscv32-performance/tests/baseline_coremark_results/coremark.trace" -do "onerror {quit -code 1}; onbreak {quit -code 1}; run -all; quit -code 0" 
+# Start time: 10:01:47 on Oct 17,2026
+# Loading sv_std.std
+# Loading work.tb_cpu_regression
+# Loading work.myCPU
+# Loading work.pc
+# Loading work.alu
+# Loading work.ctrl
+# Loading work.control
+# Loading work.alu_decoder
+# Loading work.regfile
+# Loading work.immgen
+# Loading work.branch_unit
+# Loading work.if_id
+# Loading work.id_ex
+# Loading work.ex_mem
+# Loading work.mem_wb
+# Loading work.forwarding
+# Loading work.hazard_detection
+# Loading work.branch_predictor
+# onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  onbreak {quit -code 1}
+#  Warning: onbreak command for use within macro
+#  run -all
+# COREMARK_CRC address=80200080 value=0000e9f5
+# COREMARK_CRC address=80200084 value=0000e714
+# COREMARK_CRC address=80200088 value=00001fd7
+# COREMARK_CRC address=8020008c value=00008e3a
+# COREMARK_CRC address=80200090 value=0000e714
+# RESULT PASS cycles=928519 retired=772723 stalls=20976 redirects=69516 stores=15896 loads=61097 branches=207872
+# BENCHMARK_CYCLES 883977
+# ** Note: $finish    : D:/0-contest/riscv32-performance/tests/tb_cpu_regression.sv(192)
+#    Time: 9285235 ns  Iteration: 1  Instance: /tb_cpu_regression
+# End time: 10:03:18 on Oct 17,2026, Elapsed time: 0:01:31
+# Errors: 0, Warnings: 0

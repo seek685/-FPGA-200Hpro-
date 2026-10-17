@@ -1,0 +1,109 @@
+{
+  "board_o2_3000": {
+    "clock_hz": 120000000,
+    "cycles": 2500779626,
+    "iterations": 3000,
+    "coremark_per_mhz": 1.199626
+  },
+  "o2_single_iteration": {
+    "cycles": 835295,
+    "retired": 732256,
+    "wb_bubbles": 103039,
+    "load_use_stalls": 20671,
+    "ex_conditional_branches": 198101,
+    "branch_mispredicts": 41146,
+    "ex_jalr": 22432,
+    "jalr_redirects": 38,
+    "effective_id_jal_corrections": 0,
+    "raw_id_jal_corrections": 0,
+    "stall_flush_overlap": 0,
+    "loads": 55005,
+    "stores": 14343,
+    "branches": 198101,
+    "jal": 4060,
+    "jalr": 22432,
+    "other": 438315,
+    "cpi": 1.1407144495913997,
+    "ipc": 0.8766435810103017,
+    "cycles_per_iteration": 835295,
+    "estimated_coremark_per_mhz_single_iteration": 1.1971818339628515,
+    "conditional_prediction_accuracy": 0.7922978682591204,
+    "jalr_prediction_accuracy": 0.9983059914407989,
+    "stall_cycle_fraction": 0.024746945689846103,
+    "wb_bubble_fraction": 0.12335641898969825
+  },
+  "o3_single_iteration": {
+    "cycles": 839082,
+    "retired": 736464,
+    "wb_bubbles": 102618,
+    "load_use_stalls": 20534,
+    "ex_conditional_branches": 197852,
+    "branch_mispredicts": 41004,
+    "ex_jalr": 21544,
+    "jalr_redirects": 38,
+    "effective_id_jal_corrections": 0,
+    "raw_id_jal_corrections": 0,
+    "stall_flush_overlap": 0,
+    "loads": 55261,
+    "stores": 14166,
+    "branches": 197852,
+    "jal": 3556,
+    "jalr": 21544,
+    "other": 444085,
+    "cpi": 1.1393387864172586,
+    "ipc": 0.8777020601085472,
+    "cycles_per_iteration": 839082,
+    "estimated_coremark_per_mhz_single_iteration": 1.1917786342693564,
+    "conditional_prediction_accuracy": 0.7927541798920406,
+    "jalr_prediction_accuracy": 0.9982361678425548,
+    "stall_cycle_fraction": 0.02447198247608696,
+    "wb_bubble_fraction": 0.12229793989145281
+  },
+  "o3_cycle_change_fraction": 0.004533727605217308,
+  "o2_multiply_helper": {
+    "function": "__mulsi3",
+    "address": "800063c0",
+    "retired": 432424,
+    "cycles_by_last_retired_pc": 504766,
+    "branch_mispredict": 36171,
+    "jalr_redirect": 0,
+    "load_use_stall": 0,
+    "entry_retired": 9396,
+    "retired_fraction": 0.5905366429226937,
+    "attributed_cycle_fraction": 0.6042966856020927
+  },
+  "multiply_projections": [
+    {
+      "assumed_replacement_cycles_per_multiply": 1,
+      "estimated_total_cycles": 339925,
+      "speedup": 2.457292049716849,
+      "estimated_coremark_per_mhz_from_board_o2": 2.947831432433625
+    },
+    {
+      "assumed_replacement_cycles_per_multiply": 2,
+      "estimated_total_cycles": 349321,
+      "speedup": 2.3911960632197893,
+      "estimated_coremark_per_mhz_from_board_o2": 2.868540968536103
+    },
+    {
+      "assumed_replacement_cycles_per_multiply": 3,
+      "estimated_total_cycles": 358717,
+      "speedup": 2.328562627363632,
+      "estimated_coremark_per_mhz_from_board_o2": 2.7934042704137245
+    },
+    {
+      "assumed_replacement_cycles_per_multiply": 4,
+      "estimated_total_cycles": 368113,
+      "speedup": 2.2691265997125885,
+      "estimated_coremark_per_mhz_from_board_o2": 2.7221032663068137
+    }
+  ],
+  "limits": [
+    "Only the existing one-iteration simulation was profiled; production RTL, firmware, algorithm and bitstream were not modified.",
+    "The hardware timer window and testbench cycle count match exactly. WB-valid retirement includes at most a few boundary pipeline instructions outside the conceptual software body.",
+    "Leaf-function cycles are attributed by last-retired PC; for __mulsi3 they equal retired instructions plus 2 times its conditional mispredicts in this run.",
+    "Projection replaces the entire helper attribution by one fixed-latency multiply per call while holding all other work fixed. Actual RV32IM recompilation changes call/setup instructions, scheduling, code addresses and branch-predictor behavior.",
+    "All quoted normalized M-extension outcomes are estimates, not implemented hardware or measured board results.",
+    "Both O2 and O3 use official CRC checks and retain the expected below-10-second rejection. The only formal board score remains O2 3000 iterations."
+  ]
+}

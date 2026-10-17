@@ -1,0 +1,42 @@
+[
+  {
+    "File": "core_list_join.c",
+    "Unmodified": true,
+    "SHA256": "CB85EFA5CA7E8537CE90FDCE8C13FC01DE0457A162FC44CEBA5E300E97306418"
+  },
+  {
+    "File": "core_main.c",
+    "Unmodified": true,
+    "SHA256": "C240AFDD1BDA84AF55643CA812FCBB0DD52063A7BAE2EBF12F5FC12E487328FF"
+  },
+  {
+    "File": "core_matrix.c",
+    "Unmodified": true,
+    "SHA256": "247761A5BFD88868E4FBA4B56646512F03A74BA6D35011B9BF902854F078E98B"
+  },
+  {
+    "File": "core_state.c",
+    "Unmodified": true,
+    "SHA256": "B3E36C4DEE73824C36261DD2F405BBD4E49F9EB94DD5BC2DFBD0E17AB3B3C028"
+  },
+  {
+    "File": "core_util.c",
+    "Unmodified": true,
+    "SHA256": "166E9BF09AFD290ADFFE2C6681D913C18373F77E457FAE258499FBAAD10B04FC"
+  },
+  {
+    "File": "coremark.h",
+    "Unmodified": true,
+    "SHA256": "0C6655620A7FB984A0F9A69B90E6FB0626694535971ABFB3CA0EB88422CBEAB0"
+  },
+  {
+    "File": "LICENSE.md",
+    "Unmodified": true,
+    "SHA256": "0D92A0727423E27165852685D45D9F111A071DCBA594454D7EDBAC48C28E4490"
+  },
+  {
+    "File": "README.md",
+    "Unmodified": true,
+    "SHA256": "984939CC59C9EA0ABD482D20FBDEE8ACC3C3B4D41ABF4101D78CA6970CEBC2D1"
+  }
+]

@@ -1,0 +1,116 @@
+200Pro 独立 CPU / CoreMark 上板测试
+
+工程目录：D:\0-contest\riscv32-boardtest-200pro
+本工程使用本轮优化后的 CPU；没有 HDMI、摄像头、CNN 或 DDR 依赖。
+原 CPU、已交付性能副本和原 CNN 工程均未修改。
+
+板卡与时钟
+
+按用户现有工程及厂商 MES2L676-200HP（200Pro+）配套示例约束：
+  sys_clk：D18，板载 27 MHz
+  rst_n：C22，底板用户按键 KEY0，低有效 CPU 复位（不是标着 RESET 的按键）
+  uart_tx：C24，板载 USB 转串口接收路径
+  全部 LVCMOS33。此测试只发送结果，不需要 UART RX。
+PLL 将 27 MHz 变为 120 MHz；复位等 PLL 锁定后在 CPU 域同步释放。
+具体官方证据及 PLL 模型验证见 ipcore\cpu_pll120\VALIDATION.txt。
+
+直接上板
+
+1. 给开发板正常供电，连接 JTAG 下载线和板载 USB 转串口的数据线。
+   在设备管理器确认插入后新增的 COM 口；不要选择蓝牙虚拟串口。
+
+2. 打开串口助手，选择上述 COM 口：115200、8N1、无流控。
+   先开始接收，避免漏掉启动输出。
+
+3. 打开 PDS 的 Fabric Configuration 下载器，连接下载线、扫描 JTAG，
+   确认扫描到 PG2L200H。选择 FPGA 的 JTAG/SRAM 临时配置方式，加载：
+
+   D:\0-contest\riscv32-boardtest-200pro\build\coremark120_board_v2\generate_bitstream\board_top.sbit
+
+   本轮先做临时 SRAM 配置，便于测试后重新加载原 CNN 位流。此独立镜像运行
+   CPU 测试，下载后串口输出来自 CPU，不再是原 CNN 应用。
+
+4. 下载完成，按一下底板 KEY0（C22）再松开，这是本工程的 CPU 复位。
+   串口应先看到：
+
+   CPU BOARD TEST
+   CPU_HZ=120000000
+   SMOKE PASS checksum=0x24924939
+   COREMARK ITERATIONS=3000
+
+   随后等待约 20—25 秒，结束时输出 CoreMark 官方报告、CPU cycles、
+   CoreMark/MHz 和 COREMARK DONE。等待期间没有连续进度输出是正常的；
+   UART 打印放在计时区间之外。
+
+5. 有效成绩必须同时满足：
+   - SMOKE PASS；
+   - 官方输出 Correct operation validated；
+   - Total time (secs) >= 10；
+   - 没有 ERROR、SMOKE FAIL、TIMER OVERFLOW 或 INVALID RESULT。
+
+   CoreMark 1.0 / Iterations/Sec 是每秒迭代分数；CoreMark/MHz 是每 MHz 分数。
+   以真实串口输出为准，之前 1.197 CoreMark/MHz 是单迭代仿真折算值。
+   COREMARK DONE 只表示程序走到结束，不代表成绩已经有效。
+
+不安装串口助手也可用 PowerShell
+
+Set-Location 'D:\0-contest\riscv32-boardtest-200pro'
+Get-CimInstance Win32_SerialPort | Select-Object DeviceID,Name
+.\scripts\capture_uart.ps1 -Port COM7
+
+将 COM7 换成开发板实际端口。出现 Listening 后再按 KEY0。脚本遇到
+COREMARK DONE 或等待 90 秒后保存 uart_board_result.txt。
+串口被其他助手占用时，应先关闭那个助手再运行脚本。
+
+常见现象
+
+无输出：先确认 USB-UART 数据线/驱动、COM 口，以及下载的是上面的 board_top.sbit。
+保持串口接收，重新下载成功后只按 KEY0 再松开；不要把硬件 RESET 当作 CPU 复位。
+硬件 RESET（原理图 S2/REST）经 SGM811 接 FPGA_CONFIG_N，再到 FPGA
+专用 RSTN（H12），属于配置复位链路，可能重新从 Flash 加载原工程。
+如果下载后按过硬件 RESET，请重新 JTAG 下载本测试位流，然后只按 KEY0。
+KEY0=C22 的官方证据：MES2L676-200HP硬件使用手册_v1.2.pdf，
+物理第 40 页（印刷第 37 页），3.4.1 按键章节。
+硬件 RESET 证据：BASE-V1.2 原理图物理第 7 页、CORE-V1.2 原理图物理第 3 页。
+乱码：重新确认 115200、8N1、无流控；此镜像的 CPU 固定 120 MHz。
+小于 10 秒报错：很可能下载了单迭代仿真镜像，不得把它作为正式成绩。
+TIMER OVERFLOW：计数器已超出 32 位范围，本次结果无效。120 MHz 下单次
+计时上限约 35.79 秒；默认 3000 次是为正常约 21 秒运行设置的。
+
+工程构建与验证
+
+CPU 核 14 个文件与 D:\0-contest\riscv32-performance 最终交付逐字节一致。
+32 KiB 双读组合 ROM、64 KiB 同步读字节写 RAM；取指与数据接口时序保持原核约定。
+CoreMark 官方算法源码与许可保持一致。固件真实读取硬件计数器，含启动数据段
+复制和 BSS 清零，不使用之前仿真端口的固定时间占位函数。
+ROM 镜像占 28,748 / 32,768 字节；3000 次迭代，GCC15.2，RV32I/ILP32，-O2。
+固件和 PDS 的 SHA256 冻结分别见 firmware\build_coremark_i3000_hz120000000\build_info.json
+和 build\coremark120_board_v2\source_manifest.json。
+
+真实串行解码仿真、MMIO、字节写、定时器启停/溢出、复位协议等记录：
+tests\board_test_summary.json。厂商 PLL 模型验证记录：ipcore\cpu_pll120\sim。
+CoreMark 单迭代仿真计时 835,295 cycles，五组 CRC 均正确；单迭代不产生有效成绩。
+2026-10-17 用户已提供本位流的实板串口结果：3000 次、2,500,779,626 cycles，
+20.839830 秒，官方 Correct operation validated，143.955108 CoreMark，
+1.199626 CoreMark/MHz。原文保存在 build\coremark120_board_v2\board_result_user.txt。
+这是用户提供的板测记录；完整串口原文通过了本轮有效成绩判据。
+
+重新构建（已有下载文件可直接使用，无需先重编译）
+
+.\scripts\build_firmware.ps1 -Iterations 3000 -CpuHz 120000000
+.\scripts\build_board.ps1 -FirmwareDir .\firmware\build_coremark_i3000_hz120000000 -Label coremark120_rebuild
+
+PDS 同一时间只跑一个实现任务；Label 不能与旧输出目录重复。
+完整板级时序报告：build\coremark120_board_v2\report_timing\board_top.rtr。
+最终构建 coremark120_board_v2 已完成，board_top.sbit 为 9,188,552 字节。
+目标器件 PG2L200H-6 / FBB676，27 MHz 输入、120 MHz CPU；完整布局布线后
+报告 Design Summary : All Constraints Met.，无失败端点。
+慢角 setup 裕量 +0.169 ns、慢角 hold +0.147 ns、快角 hold +0.100 ns。
+PDS 的层次资源表：10,187 LUT、1,778 FF、16 DRM、1 GPLL、3 个 IO；
+ROM 已包含在本位流内，直接下载即可，不用额外加载程序。
+位流 SHA256：DFEF9BBA402D7A42A7EA7021F7833E2FD2E64E2592975071D44B568698DDD6E0。
+构建冻结的 23 个输入文件与当前源码/固件一致；五组仿真的 128 项输入哈希
+也与当前文件一致。仿真与时序通过不代替物理上板成绩；请保存本次串口结果。
+构建日志中的 Bitstream-2001（SCBV 未设置）提示也出现在厂商该板官方
+uart_test 的 generate_bitstream\run.log 第 18 行，随后成功生成位流。
+本工程沿用官方 UART 示例的默认配置，本轮按上面的 JTAG/SRAM 方式测试。

@@ -1,0 +1,14 @@
+{
+  "program": "build_coremark_i3000_hz120000000",
+  "cpu_hz": 120000000,
+  "iterations": 3000,
+  "rom_address": "0x80000000",
+  "rom_capacity_bytes": 32768,
+  "rom_bytes": 28748,
+  "ram_address": "0x80100000",
+  "ram_capacity_bytes": 65536,
+  "compiler": "riscv-none-elf-gcc.exe (xPack GNU RISC-V Embedded GCC x86_64) 15.2.0",
+  "flags": "-march=rv32i -mabi=ilp32 -O2 -mno-relax -msmall-data-limit=0 -ffreestanding -fno-builtin -fno-common -ffunction-sections -fdata-sections -nostdlib -nostartfiles -Wall -Wextra -DCPU_HZ=120000000 -ID:\\0-contest\\riscv32-boardtest-200pro\\firmware -ID:\\0-contest\\riscv32-boardtest-200pro\\firmware\\coremark -TD:\\0-contest\\riscv32-boardtest-200pro\\firmware\\link.ld -Wl,--gc-sections -Wl,--no-relax -DITERATIONS=3000",
+  "elf_sha256": "A0BA88D66181FD97E77CDEE7935E4A8E4FBF86528F82751C865101D590BB3872",
+  "rom_hex_sha256": "11F82C04654D8EEF81F2ADA1FD2D036BAA2AEC7017AFCDA31D21D76552D944E0"
+}

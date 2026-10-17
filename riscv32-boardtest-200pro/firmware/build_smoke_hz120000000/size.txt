@@ -1,0 +1,19 @@
+D:\0-contest\riscv32-boardtest-200pro\firmware\build_smoke_hz120000000\firmware.elf  :
+section              size         addr
+.text               11260   2147483648
+.rodata               600   2147494912
+.data                   4   2148532224
+.bss                  268   2148532228
+.riscv.attributes      28            0
+.debug_info          7739            0
+.debug_abbrev        2767            0
+.debug_loclists     23889            0
+.debug_aranges        312            0
+.debug_rnglists      2567            0
+.debug_line         30997            0
+.debug_str           2102            0
+.debug_line_str      1970            0
+.debug_frame          476            0
+Total               84979
+
+

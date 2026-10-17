@@ -1,0 +1,72 @@
+[
+  {
+    "file": "alu.sv",
+    "source_matches_manifest": true,
+    "implementation_snapshot_matches_source": true
+  },
+  {
+    "file": "branch_predictor.sv",
+    "source_matches_manifest": true,
+    "implementation_snapshot_matches_source": true
+  },
+  {
+    "file": "branch_unit.sv",
+    "source_matches_manifest": true,
+    "implementation_snapshot_matches_source": true
+  },
+  {
+    "file": "control.sv",
+    "source_matches_manifest": true,
+    "implementation_snapshot_matches_source": true
+  },
+  {
+    "file": "ex_mem.sv",
+    "source_matches_manifest": true,
+    "implementation_snapshot_matches_source": true
+  },
+  {
+    "file": "forwarding.sv",
+    "source_matches_manifest": true,
+    "implementation_snapshot_matches_source": true
+  },
+  {
+    "file": "hazard_detection.sv",
+    "source_matches_manifest": true,
+    "implementation_snapshot_matches_source": true
+  },
+  {
+    "file": "id_ex.sv",
+    "source_matches_manifest": true,
+    "implementation_snapshot_matches_source": true
+  },
+  {
+    "file": "if_id.sv",
+    "source_matches_manifest": true,
+    "implementation_snapshot_matches_source": true
+  },
+  {
+    "file": "immgen.sv",
+    "source_matches_manifest": true,
+    "implementation_snapshot_matches_source": true
+  },
+  {
+    "file": "mem_wb.sv",
+    "source_matches_manifest": true,
+    "implementation_snapshot_matches_source": true
+  },
+  {
+    "file": "myCPU.sv",
+    "source_matches_manifest": true,
+    "implementation_snapshot_matches_source": true
+  },
+  {
+    "file": "pc.sv",
+    "source_matches_manifest": true,
+    "implementation_snapshot_matches_source": true
+  },
+  {
+    "file": "regfile.sv",
+    "source_matches_manifest": true,
+    "implementation_snapshot_matches_source": true
+  }
+]

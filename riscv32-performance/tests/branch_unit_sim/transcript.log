@@ -1,0 +1,18 @@
+# vsim -c -onfinish stop -l transcript.log work.tb_branch_unit -do "onbreak {quit -code 1}; onerror {quit -code 1}; run -all; quit -code 0" 
+# Start time: 10:21:18 on Oct 17,2026
+# Loading sv_std.std
+# Loading work.tb_branch_unit
+# Loading work.branch_unit
+# onbreak {quit -code 1}
+#  Warning: onbreak command for use within macro
+#  onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  run -all
+# PASS tb_branch_unit checks=805408
+# ** Note: $finish    : D:/0-contest/riscv32-performance/tests/tb_branch_unit.sv(78)
+#    Time: 805408 ns  Iteration: 0  Instance: /tb_branch_unit
+# Break in Module tb_branch_unit at D:/0-contest/riscv32-performance/tests/tb_branch_unit.sv line 78
+# Stopped at D:/0-contest/riscv32-performance/tests/tb_branch_unit.sv line 78
+#  quit -code 0
+# End time: 10:21:21 on Oct 17,2026, Elapsed time: 0:00:03
+# Errors: 0, Warnings: 0

@@ -1,0 +1,72 @@
+[
+  {
+    "file": "alu.sv",
+    "source_sha256": "CA34D4433CAD08D5B5592BCBBB22BCEEFDA6F24BC9BC50B251AAD029D8169DF3",
+    "loop_int_lowered": ""
+  },
+  {
+    "file": "branch_predictor.sv",
+    "source_sha256": "BF1949E819BE29ADB4B0EC0A37392526B5A442DBD3F79DDE463A26386E15104D",
+    "loop_int_lowered": "i,j"
+  },
+  {
+    "file": "branch_unit.sv",
+    "source_sha256": "ECADD7C31ACE9B28F80E8DC251DA81FDF145AC9528A21C9ADE4E3E1A379F1069",
+    "loop_int_lowered": ""
+  },
+  {
+    "file": "control.sv",
+    "source_sha256": "CEB46C695E8686B0820B4D7D83B48F7B7B3197B7019528EAB6F8B3EF00013DF9",
+    "loop_int_lowered": ""
+  },
+  {
+    "file": "ex_mem.sv",
+    "source_sha256": "EA7EE83A221A18F5B500C1C5B58AB572E674F9EEF49B2B13335B5BF0A9946872",
+    "loop_int_lowered": ""
+  },
+  {
+    "file": "forwarding.sv",
+    "source_sha256": "FA5B9D0BC99D3706BEA742F7590660DD0CFD72179883A04C875C7686DBE75495",
+    "loop_int_lowered": ""
+  },
+  {
+    "file": "hazard_detection.sv",
+    "source_sha256": "5782D347744EA1050E0E47804D1C4C15D0A94A6C905891C6CD05A4C5792ED3C2",
+    "loop_int_lowered": ""
+  },
+  {
+    "file": "id_ex.sv",
+    "source_sha256": "593B42047E6809728732A490A8B963530DA34F6BF29BE6D11217FFCD7E3CE26E",
+    "loop_int_lowered": ""
+  },
+  {
+    "file": "if_id.sv",
+    "source_sha256": "B61C05F9C38FAB414E986770320B0695C8351CFB50DB76AF63BAF013645F3965",
+    "loop_int_lowered": ""
+  },
+  {
+    "file": "immgen.sv",
+    "source_sha256": "B1A28A4F3FBEF6A5C108A2759C516CF0C94BBBE2648DF71451C271AED2B774A4",
+    "loop_int_lowered": ""
+  },
+  {
+    "file": "mem_wb.sv",
+    "source_sha256": "C0A6D26CEB7E8E9C4404C0A9AFAC50F6378998C29841080E8495B3287B59524A",
+    "loop_int_lowered": ""
+  },
+  {
+    "file": "myCPU.sv",
+    "source_sha256": "CA4C787F33F432D81B917D12BD96AF93C10F1461571B07C5A57F84B2E8A9DF6B",
+    "loop_int_lowered": ""
+  },
+  {
+    "file": "pc.sv",
+    "source_sha256": "93DB1E40D8BBACFD8B734F8D6C3E138165F11729D2901DEA025A82E577542542",
+    "loop_int_lowered": ""
+  },
+  {
+    "file": "regfile.sv",
+    "source_sha256": "A3BB4EDD5471D8DC1764767C2A4EB9EBD69BBACC80E019468E677C0C70E44A05",
+    "loop_int_lowered": "i"
+  }
+]

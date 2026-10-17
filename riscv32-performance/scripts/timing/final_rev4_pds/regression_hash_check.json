@@ -1,0 +1,72 @@
+[
+  {
+    "file": "alu.sv",
+    "matching": true,
+    "lowered": ""
+  },
+  {
+    "file": "branch_predictor.sv",
+    "matching": true,
+    "lowered": ""
+  },
+  {
+    "file": "branch_unit.sv",
+    "matching": true,
+    "lowered": ""
+  },
+  {
+    "file": "control.sv",
+    "matching": true,
+    "lowered": ""
+  },
+  {
+    "file": "ex_mem.sv",
+    "matching": true,
+    "lowered": ""
+  },
+  {
+    "file": "forwarding.sv",
+    "matching": true,
+    "lowered": ""
+  },
+  {
+    "file": "hazard_detection.sv",
+    "matching": true,
+    "lowered": ""
+  },
+  {
+    "file": "id_ex.sv",
+    "matching": true,
+    "lowered": ""
+  },
+  {
+    "file": "if_id.sv",
+    "matching": true,
+    "lowered": ""
+  },
+  {
+    "file": "immgen.sv",
+    "matching": true,
+    "lowered": ""
+  },
+  {
+    "file": "mem_wb.sv",
+    "matching": true,
+    "lowered": ""
+  },
+  {
+    "file": "myCPU.sv",
+    "matching": true,
+    "lowered": ""
+  },
+  {
+    "file": "pc.sv",
+    "matching": true,
+    "lowered": ""
+  },
+  {
+    "file": "regfile.sv",
+    "matching": true,
+    "lowered": ""
+  }
+]

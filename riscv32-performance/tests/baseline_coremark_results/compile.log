@@ -1,0 +1,25 @@
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+Start time: 10:01:45 on Oct 17,2026
+vlog -sv -work work D:\0-contest\riscv32-performance\tests\baseline_rtl\alu.sv D:\0-contest\riscv32-performance\tests\baseline_rtl\branch_predictor.sv D:\0-contest\riscv32-performance\tests\baseline_rtl\branch_unit.sv D:\0-contest\riscv32-performance\tests\baseline_rtl\control.sv D:\0-contest\riscv32-performance\tests\baseline_rtl\ex_mem.sv D:\0-contest\riscv32-performance\tests\baseline_rtl\forwarding.sv D:\0-contest\riscv32-performance\tests\baseline_rtl\hazard_detection.sv D:\0-contest\riscv32-performance\tests\baseline_rtl\id_ex.sv D:\0-contest\riscv32-performance\tests\baseline_rtl\if_id.sv D:\0-contest\riscv32-performance\tests\baseline_rtl\immgen.sv D:\0-contest\riscv32-performance\tests\baseline_rtl\mem_wb.sv D:\0-contest\riscv32-performance\tests\baseline_rtl\myCPU.sv D:\0-contest\riscv32-performance\tests\baseline_rtl\pc.sv D:\0-contest\riscv32-performance\tests\baseline_rtl\regfile.sv D:\0-contest\riscv32-performance\tests\tb_cpu_regression.sv 
+-- Compiling module alu
+-- Compiling module branch_predictor
+-- Compiling module branch_unit
+-- Compiling module control
+-- Compiling module alu_decoder
+-- Compiling module ctrl
+-- Compiling module ex_mem
+-- Compiling module forwarding
+-- Compiling module hazard_detection
+-- Compiling module id_ex
+-- Compiling module if_id
+-- Compiling module immgen
+-- Compiling module mem_wb
+-- Compiling module myCPU
+-- Compiling module pc
+-- Compiling module regfile
+-- Compiling module tb_cpu_regression
+
+Top level modules:
+	tb_cpu_regression
+End time: 10:01:46 on Oct 17,2026, Elapsed time: 0:00:01
+Errors: 0, Warnings: 0

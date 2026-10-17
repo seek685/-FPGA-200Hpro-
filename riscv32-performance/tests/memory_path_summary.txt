@@ -1,0 +1,2 @@
+baseline: PASS tb_memory_path cycles=126 stalls=27 loads=52 stores=28 instructions=95 words_checked=256 registers_checked=32
+final: PASS tb_memory_path cycles=105 stalls=6 loads=52 stores=28 instructions=95 words_checked=256 registers_checked=32

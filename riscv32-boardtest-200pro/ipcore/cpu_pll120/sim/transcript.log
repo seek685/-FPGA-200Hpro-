@@ -1,0 +1,19 @@
+# vsim -c -t 1fs -onfinish stop -l transcript.log work.tb_cpu_pll120_check -do "onbreak {quit -code 1}; onerror {quit -code 1}; run -all; quit -code 0" 
+# Start time: 14:00:26 on Oct 17,2026
+# Loading sv_std.std
+# Loading work.tb_cpu_pll120_check
+# Loading work.cpu_pll120
+# Loading work.GTP_GPLL
+# onbreak {quit -code 1}
+#  Warning: onbreak command for use within macro
+#  onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  run -all
+# PASS cpu_pll120: input=27 MHz, measured=119.999996880 MHz, 12000 stable output cycles, lock maintained
+# ** Note: $finish    : D:/0-contest/riscv32-boardtest-200pro/ipcore/cpu_pll120/tb_cpu_pll120_check.sv(27)
+#    Time: 100587039653 fs  Iteration: 6  Instance: /tb_cpu_pll120_check
+# Break in Module tb_cpu_pll120_check at D:/0-contest/riscv32-boardtest-200pro/ipcore/cpu_pll120/tb_cpu_pll120_check.sv line 27
+# Stopped at D:/0-contest/riscv32-boardtest-200pro/ipcore/cpu_pll120/tb_cpu_pll120_check.sv line 27
+#  quit -code 0
+# End time: 14:00:34 on Oct 17,2026, Elapsed time: 0:00:08
+# Errors: 0, Warnings: 0

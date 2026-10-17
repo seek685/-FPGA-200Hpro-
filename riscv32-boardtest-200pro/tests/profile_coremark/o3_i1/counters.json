@@ -1,0 +1,5 @@
+{
+"cycles":839082,"retired":736464,"wb_bubbles":102618,"load_use_stalls":20534,
+"ex_conditional_branches":197852,"branch_mispredicts":41004,"ex_jalr":21544,"jalr_redirects":38,
+"effective_id_jal_corrections":0,"raw_id_jal_corrections":0,"stall_flush_overlap":0,
+"loads":55261,"stores":14166,"branches":197852,"jal":3556,"jalr":21544,"other":444085}

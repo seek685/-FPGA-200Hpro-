@@ -1,0 +1,37 @@
+[
+  {
+    "test": "Mmio",
+    "result": "PASS",
+    "detail": "PASS tb_board_mmio checks=34 uart_bytes=1",
+    "uart_bytes": 1,
+    "capture": "A"
+  },
+  {
+    "test": "Uart",
+    "result": "PASS",
+    "detail": "PASS tb_uart_nominal divisor=1041 uart_bytes=4",
+    "uart_bytes": 4,
+    "capture": "\u0000??Z"
+  },
+  {
+    "test": "Reset",
+    "result": "PASS",
+    "detail": "PASS tb_board_reset checks=6 release_cycles=34",
+    "uart_bytes": 0,
+    "capture": ""
+  },
+  {
+    "test": "Smoke",
+    "result": "PASS",
+    "detail": "PASS tb_cpu_soc mode=0 cycles=16243 uart_bytes=91",
+    "uart_bytes": 91,
+    "capture": "\r\nCPU BOARD TEST\r\nCPU_HZ=120000000\r\nSMOKE PASS checksum=0x24924939\r\nUART PASS\r\nSMOKE DONE\r\n"
+  },
+  {
+    "test": "CoreMarkSmoke",
+    "result": "PASS",
+    "detail": "PASS tb_cpu_soc mode=1 cycles=977171 uart_bytes=801",
+    "uart_bytes": 801,
+    "capture": "\r\nCPU BOARD TEST\r\nCPU_HZ=120000000\r\nSMOKE PASS checksum=0x24924939\r\nCOREMARK ITERATIONS=1\r\nTIMER_MAX_SECONDS=35.791394\r\nPlease wait; UART is outside the timed region.\r\n2K performance run parameters for coremark.\r\nCoreMark Size    : 666\r\nTotal ticks      : 835295\r\nTotal time (secs): 0.006961\r\nIterations/Sec   : 143.661820\r\nERROR! Must execute for at least 10 secs for a valid result!\r\nIterations       : 1\r\nCompiler version : GCC 15.2.0\r\nCompiler flags   : -O2 -march=rv32i -mabi=ilp32 -mno-relax -msmall-data-limit=0\r\nMemory location  : on-chip RAM\r\nseedcrc          : 0xe9f5\r\n[0]crclist       : 0xe714\r\n[0]crcmatrix     : 0x1fd7\r\n[0]crcstate      : 0x8e3a\r\n[0]crcfinal      : 0xe714\r\nErrors detected\r\nCPU cycles       : 835295\r\nCoreMark/MHz not reported: duration below 10 seconds.\r\nCOREMARK DONE\r\n"
+  }
+]

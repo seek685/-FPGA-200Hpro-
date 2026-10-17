@@ -1,0 +1,58 @@
+[
+  {
+    "file": "alu.sv",
+    "matches": true
+  },
+  {
+    "file": "branch_predictor.sv",
+    "matches": true
+  },
+  {
+    "file": "branch_unit.sv",
+    "matches": true
+  },
+  {
+    "file": "control.sv",
+    "matches": true
+  },
+  {
+    "file": "ex_mem.sv",
+    "matches": true
+  },
+  {
+    "file": "forwarding.sv",
+    "matches": true
+  },
+  {
+    "file": "hazard_detection.sv",
+    "matches": true
+  },
+  {
+    "file": "id_ex.sv",
+    "matches": true
+  },
+  {
+    "file": "if_id.sv",
+    "matches": true
+  },
+  {
+    "file": "immgen.sv",
+    "matches": true
+  },
+  {
+    "file": "mem_wb.sv",
+    "matches": true
+  },
+  {
+    "file": "myCPU.sv",
+    "matches": true
+  },
+  {
+    "file": "pc.sv",
+    "matches": true
+  },
+  {
+    "file": "regfile.sv",
+    "matches": true
+  }
+]

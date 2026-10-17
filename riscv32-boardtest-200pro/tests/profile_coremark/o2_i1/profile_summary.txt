@@ -1,0 +1,31 @@
+cycles=835295 retired=732256 CPI=1.140714 IPC=0.876644
+WB bubbles=103039 (12.336%), load-use stalls=20671 (2.475%)
+conditional branches=198101 mispredict=41146 accuracy=79.230%
+JALR=22432 redirect=38 accuracy=99.831%
+effective ID JAL corrections=0, raw=0, stall/flush overlap=0
+Function: retired | cycles by last retired PC | conditional mispredicts | retired fraction | attributed cycle fraction
+__mulsi3: 432424 | 504766 | 36171 | 59.054% | 60.430%
+core_bench_list: 65126 | 84305 | 774 | 8.894% | 10.093%
+core_state_transition: 67192 | 72744 | 1620 | 9.176% | 8.709%
+matrix_mul_matrix_bitextract: 44532 | 46318 | 891 | 6.081% | 5.545%
+matrix_mul_matrix: 27036 | 27962 | 462 | 3.692% | 3.348%
+matrix_test: 23084 | 23960 | 429 | 3.152% | 2.868%
+crc16: 18626 | 18626 | 0 | 2.544% | 2.230%
+crcu32: 16896 | 16896 | 0 | 2.307% | 2.023%
+core_bench_state: 13660 | 14054 | 142 | 1.865% | 1.683%
+core_list_mergesort: 8202 | 9296 | 545 | 1.120% | 1.113%
+crcu16: 4140 | 4140 | 0 | 0.565% | 0.496%
+cmp_idx: 3553 | 3979 | 4 | 0.485% | 0.476%
+matrix_mul_vect: 3020 | 3150 | 64 | 0.412% | 0.377%
+calc_func: 2451 | 2765 | 44 | 0.335% | 0.331%
+cmp_complex: 2200 | 2204 | 0 | 0.300% | 0.264%
+core_bench_matrix: 68 | 72 | 0 | 0.009% | 0.009%
+iterate: 38 | 46 | 0 | 0.005% | 0.006%
+main: 5 | 9 | 0 | 0.001% | 0.001%
+start_time: 3 | 3 | 0 | 0.000% | 0.000%
+Window equals hardware timer: excludes start-store edge, includes stop-store edge.
+Retired counts WB-valid each clock, including stores and branches. At most a few boundary pipeline instructions straddle the software timed region.
+EX branch/JALR events and load-use stalls are sampled in the same window; these are overlapping event categories, not additive measured execution times.
+cycles_by_last_retired_pc assigns every WB bubble to the last retired PC. Useful leaf-function time attribution; not instruction latency or exclusive pipeline occupancy.
+One iteration retains the official below-10-second rejection, so normalized numbers are estimates, not formal scores.
+Same production v2 RTL, one-iteration firmware, accelerated UART outside the timed region.

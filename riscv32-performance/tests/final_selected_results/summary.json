@@ -1,0 +1,303 @@
+{
+  "alu": {
+    "cycles": 265,
+    "retired": 261,
+    "stalls": 0,
+    "redirects": 0,
+    "stores": 1,
+    "loads": 0,
+    "branches": 0,
+    "text_bytes": 1048
+  },
+  "hazards": {
+    "cycles": 968,
+    "retired": 836,
+    "stalls": 128,
+    "redirects": 0,
+    "stores": 129,
+    "loads": 256,
+    "branches": 0,
+    "text_bytes": 3348
+  },
+  "subword_memory": {
+    "cycles": 49,
+    "retired": 41,
+    "stalls": 4,
+    "redirects": 0,
+    "stores": 10,
+    "loads": 19,
+    "branches": 0,
+    "text_bytes": 168
+  },
+  "control_recovery": {
+    "cycles": 224,
+    "retired": 189,
+    "stalls": 1,
+    "redirects": 15,
+    "stores": 2,
+    "loads": 1,
+    "branches": 88,
+    "text_bytes": 200
+  },
+  "branch_loop": {
+    "cycles": 637,
+    "retired": 605,
+    "stalls": 0,
+    "redirects": 14,
+    "stores": 1,
+    "loads": 0,
+    "branches": 200,
+    "text_bytes": 36
+  },
+  "call_return": {
+    "cycles": 537,
+    "retired": 505,
+    "stalls": 0,
+    "redirects": 14,
+    "stores": 1,
+    "loads": 0,
+    "branches": 100,
+    "text_bytes": 48
+  },
+  "false_dependencies": {
+    "cycles": 708,
+    "retired": 604,
+    "stalls": 100,
+    "redirects": 0,
+    "stores": 1,
+    "loads": 300,
+    "branches": 0,
+    "text_bytes": 2420
+  },
+  "branch_same_next_pc": {
+    "cycles": 11,
+    "retired": 5,
+    "stalls": 0,
+    "redirects": 1,
+    "stores": 1,
+    "loads": 0,
+    "branches": 1,
+    "text_bytes": 24
+  },
+  "load_store_bypass": {
+    "cycles": 37,
+    "retired": 30,
+    "stalls": 3,
+    "redirects": 0,
+    "stores": 12,
+    "loads": 11,
+    "branches": 0,
+    "text_bytes": 124
+  },
+  "jalr_offsets": {
+    "cycles": 22,
+    "retired": 14,
+    "stalls": 0,
+    "redirects": 2,
+    "stores": 1,
+    "loads": 0,
+    "branches": 0,
+    "text_bytes": 76
+  },
+  "nested_x1_x5": {
+    "cycles": 837,
+    "retired": 645,
+    "stalls": 0,
+    "redirects": 94,
+    "stores": 1,
+    "loads": 0,
+    "branches": 80,
+    "text_bytes": 64
+  },
+  "coroutine_x1_x5": {
+    "cycles": 21,
+    "retired": 13,
+    "stalls": 0,
+    "redirects": 2,
+    "stores": 1,
+    "loads": 0,
+    "branches": 0,
+    "text_bytes": 64
+  },
+  "ras_overflow": {
+    "cycles": 175,
+    "retired": 153,
+    "stalls": 0,
+    "redirects": 9,
+    "stores": 25,
+    "loads": 24,
+    "branches": 0,
+    "text_bytes": 716
+  },
+  "shared_leaf": {
+    "cycles": 1037,
+    "retired": 1005,
+    "stalls": 0,
+    "redirects": 14,
+    "stores": 1,
+    "loads": 0,
+    "branches": 100,
+    "text_bytes": 60
+  },
+  "warm_reset_jalr": {
+    "cycles": 858,
+    "retired": 816,
+    "stalls": 0,
+    "redirects": 17,
+    "stores": 2,
+    "loads": 0,
+    "branches": 160,
+    "text_bytes": 80
+  },
+  "load_to_control": {
+    "cycles": 328,
+    "retired": 251,
+    "stalls": 41,
+    "redirects": 16,
+    "stores": 2,
+    "loads": 41,
+    "branches": 41,
+    "text_bytes": 84
+  },
+  "random_00": {
+    "cycles": 1567,
+    "retired": 1421,
+    "stalls": 10,
+    "redirects": 66,
+    "stores": 129,
+    "loads": 128,
+    "branches": 136,
+    "text_bytes": 6604
+  },
+  "random_01": {
+    "cycles": 1578,
+    "retired": 1426,
+    "stalls": 14,
+    "redirects": 67,
+    "stores": 139,
+    "loads": 138,
+    "branches": 132,
+    "text_bytes": 6564
+  },
+  "random_02": {
+    "cycles": 1611,
+    "retired": 1445,
+    "stalls": 10,
+    "redirects": 76,
+    "stores": 140,
+    "loads": 139,
+    "branches": 159,
+    "text_bytes": 6660
+  },
+  "random_03": {
+    "cycles": 1620,
+    "retired": 1461,
+    "stalls": 3,
+    "redirects": 76,
+    "stores": 160,
+    "loads": 159,
+    "branches": 155,
+    "text_bytes": 6732
+  },
+  "random_04": {
+    "cycles": 1579,
+    "retired": 1425,
+    "stalls": 6,
+    "redirects": 72,
+    "stores": 141,
+    "loads": 140,
+    "branches": 134,
+    "text_bytes": 6596
+  },
+  "random_05": {
+    "cycles": 1584,
+    "retired": 1441,
+    "stalls": 7,
+    "redirects": 66,
+    "stores": 143,
+    "loads": 142,
+    "branches": 142,
+    "text_bytes": 6596
+  },
+  "random_06": {
+    "cycles": 1574,
+    "retired": 1441,
+    "stalls": 5,
+    "redirects": 62,
+    "stores": 147,
+    "loads": 146,
+    "branches": 134,
+    "text_bytes": 6620
+  },
+  "random_07": {
+    "cycles": 1614,
+    "retired": 1453,
+    "stalls": 9,
+    "redirects": 74,
+    "stores": 167,
+    "loads": 166,
+    "branches": 138,
+    "text_bytes": 6676
+  },
+  "random_08": {
+    "cycles": 1640,
+    "retired": 1465,
+    "stalls": 9,
+    "redirects": 81,
+    "stores": 158,
+    "loads": 157,
+    "branches": 166,
+    "text_bytes": 6688
+  },
+  "random_09": {
+    "cycles": 1613,
+    "retired": 1449,
+    "stalls": 4,
+    "redirects": 78,
+    "stores": 159,
+    "loads": 158,
+    "branches": 146,
+    "text_bytes": 6696
+  },
+  "random_10": {
+    "cycles": 1652,
+    "retired": 1452,
+    "stalls": 12,
+    "redirects": 92,
+    "stores": 147,
+    "loads": 146,
+    "branches": 175,
+    "text_bytes": 6788
+  },
+  "random_11": {
+    "cycles": 1586,
+    "retired": 1433,
+    "stalls": 13,
+    "redirects": 68,
+    "stores": 139,
+    "loads": 138,
+    "branches": 140,
+    "text_bytes": 6576
+  },
+  "c_kernel": {
+    "cycles": 33600,
+    "retired": 32412,
+    "stalls": 512,
+    "redirects": 336,
+    "stores": 1254,
+    "loads": 2819,
+    "branches": 5288,
+    "text_bytes": 500
+  },
+  "coremark": {
+    "cycles": 878605,
+    "retired": 772723,
+    "stalls": 20906,
+    "redirects": 42486,
+    "stores": 15896,
+    "loads": 61097,
+    "branches": 207872,
+    "text_bytes": 12572,
+    "benchmark_cycles": 835113
+  }
+}

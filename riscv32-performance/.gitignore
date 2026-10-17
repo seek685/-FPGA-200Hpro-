@@ -1,0 +1,13 @@
+**/work/
+**/__pycache__/
+*.wlf
+*.trace
+*.pyc
+*.db
+*.adf
+*.pvf
+*.lock
+/scripts/timing/*_pds/
+!/scripts/timing/baseline_pnr_pds/
+!/scripts/timing/final_rev3_pds/
+!/scripts/timing/final_rev4_pds/

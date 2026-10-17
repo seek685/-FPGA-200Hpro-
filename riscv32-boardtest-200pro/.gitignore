@@ -1,0 +1,11 @@
+**/work/
+**/__pycache__/
+*.wlf
+*.pyc
+*.db
+*.adf
+*.pvf
+*.lock
+*.smsk
+/build/*
+!/build/coremark120_board_v2/

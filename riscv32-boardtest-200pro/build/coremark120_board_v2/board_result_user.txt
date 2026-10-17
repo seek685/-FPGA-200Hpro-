@@ -1,0 +1,27 @@
+Source: UART output supplied by the user on 2026-10-17; not captured by this tool.
+
+CPU BOARD TEST
+CPU_HZ=120000000
+SMOKE PASS checksum=0x24924939
+COREMARK ITERATIONS=3000
+TIMER_MAX_SECONDS=35.791394
+Please wait; UART is outside the timed region.
+2K performance run parameters for coremark.
+CoreMark Size    : 666
+Total ticks      : 2500779626
+Total time (secs): 20.839830
+Iterations/Sec   : 143.955108
+Iterations       : 3000
+Compiler version : GCC 15.2.0
+Compiler flags   : -O2 -march=rv32i -mabi=ilp32 -mno-relax -msmall-data-limit=0
+Memory location  : on-chip RAM
+seedcrc          : 0xe9f5
+[0]crclist       : 0xe714
+[0]crcmatrix     : 0x1fd7
+[0]crcstate      : 0x8e3a
+[0]crcfinal      : 0xcc42
+Correct operation validated. See README.md for run and reporting rules.
+CoreMark 1.0 : 143.955108 / GCC 15.2.0 -O2 -march=rv32i -mabi=ilp32 -mno-relax -msmall-data-limit=0 / on-chip RAM
+CPU cycles       : 2500779626
+CoreMark/MHz     : 1.199626
+COREMARK DONE

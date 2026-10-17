@@ -1,0 +1,19 @@
+D:\0-contest\riscv32-boardtest-200pro\firmware\build_coremark_i1_hz120000000\firmware.elf  :
+section               size         addr
+.text                25888   2147483648
+.rodata               2828   2147509536
+.data                   16   2148532224
+.bss                  2272   2148532240
+.riscv.attributes       28            0
+.debug_info          10654            0
+.debug_abbrev         3552            0
+.debug_loclists      31152            0
+.debug_aranges         376            0
+.debug_rnglists       3130            0
+.debug_line          39490            0
+.debug_str            2324            0
+.debug_line_str       2313            0
+.debug_frame           772            0
+Total               124795
+
+

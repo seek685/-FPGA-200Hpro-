@@ -1,0 +1,13 @@
+{
+  "coremark": {
+    "cycles": 928519,
+    "retired": 772723,
+    "stalls": 20976,
+    "redirects": 69516,
+    "stores": 15896,
+    "loads": 61097,
+    "branches": 207872,
+    "text_bytes": 12572,
+    "benchmark_cycles": 883977
+  }
+}

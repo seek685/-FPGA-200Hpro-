@@ -1,0 +1,44 @@
+Reading pref.tcl
+
+# 2020.1
+
+# vsim -c -onfinish stop -l transcript.log work.tb_board_reset "+COREMARK=0" -do "onbreak {quit -code 1}; onerror {quit -code 1}; run -all; quit -code 0" 
+# Start time: 14:09:33 on Oct 17,2026
+# Loading sv_std.std
+# Loading work.tb_board_reset
+# Loading work.board_top
+# Loading work.cpu_pll120
+# Loading work.cpu_soc
+# Loading work.myCPU
+# Loading work.pc
+# Loading work.alu
+# Loading work.ctrl
+# Loading work.control
+# Loading work.alu_decoder
+# Loading work.regfile
+# Loading work.immgen
+# Loading work.branch_unit
+# Loading work.if_id
+# Loading work.id_ex
+# Loading work.ex_mem
+# Loading work.mem_wb
+# Loading work.forwarding
+# Loading work.hazard_detection
+# Loading work.branch_predictor
+# Loading work.board_irom
+# Loading work.board_mmio
+# Loading work.board_dram
+# Loading work.uart_tx
+# onbreak {quit -code 1}
+#  Warning: onbreak command for use within macro
+#  onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  run -all
+# PASS tb_board_reset checks=6 release_cycles=34
+# ** Note: $finish    : D:/0-contest/riscv32-boardtest-200pro/tests/tb_board_reset.sv(59)
+#    Time: 1486 ns  Iteration: 0  Instance: /tb_board_reset
+# Break in Module tb_board_reset at D:/0-contest/riscv32-boardtest-200pro/tests/tb_board_reset.sv line 59
+# Stopped at D:/0-contest/riscv32-boardtest-200pro/tests/tb_board_reset.sv line 59
+#  quit -code 0
+# End time: 14:09:33 on Oct 17,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0

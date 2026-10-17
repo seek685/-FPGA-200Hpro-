@@ -1,0 +1,39 @@
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+Start time: 14:09:34 on Oct 17,2026
+vlog -sv -work work D:\0-contest\riscv32-boardtest-200pro\rtl\core\alu.sv D:\0-contest\riscv32-boardtest-200pro\rtl\core\branch_predictor.sv D:\0-contest\riscv32-boardtest-200pro\rtl\core\branch_unit.sv D:\0-contest\riscv32-boardtest-200pro\rtl\core\control.sv D:\0-contest\riscv32-boardtest-200pro\rtl\core\ex_mem.sv D:\0-contest\riscv32-boardtest-200pro\rtl\core\forwarding.sv D:\0-contest\riscv32-boardtest-200pro\rtl\core\hazard_detection.sv D:\0-contest\riscv32-boardtest-200pro\rtl\core\id_ex.sv D:\0-contest\riscv32-boardtest-200pro\rtl\core\if_id.sv D:\0-contest\riscv32-boardtest-200pro\rtl\core\immgen.sv D:\0-contest\riscv32-boardtest-200pro\rtl\core\mem_wb.sv D:\0-contest\riscv32-boardtest-200pro\rtl\core\myCPU.sv D:\0-contest\riscv32-boardtest-200pro\rtl\core\pc.sv D:\0-contest\riscv32-boardtest-200pro\rtl\core\regfile.sv D:\0-contest\riscv32-boardtest-200pro\rtl\board_dram.sv D:\0-contest\riscv32-boardtest-200pro\rtl\board_irom.sv D:\0-contest\riscv32-boardtest-200pro\rtl\uart_tx.sv D:\0-contest\riscv32-boardtest-200pro\rtl\board_mmio.sv D:\0-contest\riscv32-boardtest-200pro\rtl\cpu_soc.sv D:\0-contest\riscv32-boardtest-200pro\rtl\board_top.sv D:\0-contest\riscv32-boardtest-200pro\tests\serial_uart_monitor.sv D:\0-contest\riscv32-boardtest-200pro\tests\tb_board_mmio.sv D:\0-contest\riscv32-boardtest-200pro\tests\tb_uart_nominal.sv D:\0-contest\riscv32-boardtest-200pro\tests\tb_board_reset.sv D:\0-contest\riscv32-boardtest-200pro\tests\tb_cpu_soc.sv 
+-- Compiling module alu
+-- Compiling module branch_predictor
+-- Compiling module branch_unit
+-- Compiling module control
+-- Compiling module alu_decoder
+-- Compiling module ctrl
+-- Compiling module ex_mem
+-- Compiling module forwarding
+-- Compiling module hazard_detection
+-- Compiling module id_ex
+-- Compiling module if_id
+-- Compiling module immgen
+-- Compiling module mem_wb
+-- Compiling module myCPU
+-- Compiling module pc
+-- Compiling module regfile
+-- Compiling module board_dram
+-- Compiling module board_irom
+-- Compiling module uart_tx
+-- Compiling module board_mmio
+-- Compiling module cpu_soc
+-- Compiling module board_top
+-- Compiling module serial_uart_monitor
+-- Compiling module tb_board_mmio
+-- Compiling module tb_uart_nominal
+-- Compiling module cpu_pll120
+-- Compiling module tb_board_reset
+-- Compiling module tb_cpu_soc
+
+Top level modules:
+	tb_board_mmio
+	tb_uart_nominal
+	tb_board_reset
+	tb_cpu_soc
+End time: 14:09:34 on Oct 17,2026, Elapsed time: 0:00:00
+Errors: 0, Warnings: 0

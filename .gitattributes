@@ -1,0 +1,2 @@
+riscv32-performance/** -text
+riscv32-boardtest-200pro/** -text

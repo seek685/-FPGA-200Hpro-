@@ -1,0 +1,557 @@
+{
+  "counters": {
+    "cycles": 839082,
+    "retired": 736464,
+    "wb_bubbles": 102618,
+    "load_use_stalls": 20534,
+    "ex_conditional_branches": 197852,
+    "branch_mispredicts": 41004,
+    "ex_jalr": 21544,
+    "jalr_redirects": 38,
+    "effective_id_jal_corrections": 0,
+    "raw_id_jal_corrections": 0,
+    "stall_flush_overlap": 0,
+    "loads": 55261,
+    "stores": 14166,
+    "branches": 197852,
+    "jal": 3556,
+    "jalr": 21544,
+    "other": 444085,
+    "cpi": 1.1393387864172586,
+    "ipc": 0.8777020601085472,
+    "cycles_per_iteration": 839082,
+    "estimated_coremark_per_mhz_single_iteration": 1.1917786342693564,
+    "conditional_prediction_accuracy": 0.7927541798920406,
+    "jalr_prediction_accuracy": 0.9982361678425548,
+    "stall_cycle_fraction": 0.02447198247608696,
+    "wb_bubble_fraction": 0.12229793989145281
+  },
+  "functions": [
+    {
+      "function": "__mulsi3",
+      "address": "8000693c",
+      "retired": 432424,
+      "cycles_by_last_retired_pc": 505348,
+      "branch_mispredict": 36462,
+      "jalr_redirect": 0,
+      "load_use_stall": 0,
+      "entry_retired": 9396,
+      "retired_fraction": 0.5871624410697603,
+      "attributed_cycle_fraction": 0.6022629492707506
+    },
+    {
+      "function": "matrix_test",
+      "address": "800021cc",
+      "retired": 104048,
+      "cycles_by_last_retired_pc": 107326,
+      "branch_mispredict": 1538,
+      "jalr_redirect": 11,
+      "load_use_stall": 180,
+      "entry_retired": 4,
+      "retired_fraction": 0.14128049707792914,
+      "attributed_cycle_fraction": 0.12790883370159292
+    },
+    {
+      "function": "core_bench_list",
+      "address": "80000cfc",
+      "retired": 76163,
+      "cycles_by_last_retired_pc": 96409,
+      "branch_mispredict": 1203,
+      "jalr_redirect": 4,
+      "load_use_stall": 17832,
+      "entry_retired": 2,
+      "retired_fraction": 0.10341713919485541,
+      "attributed_cycle_fraction": 0.11489818635127437
+    },
+    {
+      "function": "core_state_transition",
+      "address": "80002ce8",
+      "retired": 67192,
+      "cycles_by_last_retired_pc": 72820,
+      "branch_mispredict": 1658,
+      "jalr_redirect": 0,
+      "load_use_stall": 2312,
+      "entry_retired": 1024,
+      "retired_fraction": 0.09123595993829976,
+      "attributed_cycle_fraction": 0.08678532014749453
+    },
+    {
+      "function": "crc16",
+      "address": "800038a0",
+      "retired": 18626,
+      "cycles_by_last_retired_pc": 18626,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0,
+      "entry_retired": 134,
+      "retired_fraction": 0.025291120815138284,
+      "attributed_cycle_fraction": 0.02219806884190103
+    },
+    {
+      "function": "crcu32",
+      "address": "80003480",
+      "retired": 16896,
+      "cycles_by_last_retired_pc": 16896,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0,
+      "entry_retired": 64,
+      "retired_fraction": 0.022942058267613894,
+      "attributed_cycle_fraction": 0.020136291804615042
+    },
+    {
+      "function": "core_bench_state",
+      "address": "80002fd0",
+      "retired": 13532,
+      "cycles_by_last_retired_pc": 13840,
+      "branch_mispredict": 98,
+      "jalr_redirect": 6,
+      "load_use_stall": 100,
+      "entry_retired": 4,
+      "retired_fraction": 0.018374285776358384,
+      "attributed_cycle_fraction": 0.01649421629828789
+    },
+    {
+      "function": "crcu16",
+      "address": "80003258",
+      "retired": 4140,
+      "cycles_by_last_retired_pc": 4140,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0,
+      "entry_retired": 30,
+      "retired_fraction": 0.0056214560385843704,
+      "attributed_cycle_fraction": 0.004933963545875135
+    },
+    {
+      "function": "cmp_complex",
+      "address": "80000a88",
+      "retired": 3329,
+      "cycles_by_last_retired_pc": 3545,
+      "branch_mispredict": 44,
+      "jalr_redirect": 9,
+      "load_use_stall": 110,
+      "entry_retired": 110,
+      "retired_fraction": 0.004520248104455887,
+      "attributed_cycle_fraction": 0.004224855258484868
+    },
+    {
+      "function": "core_bench_matrix",
+      "address": "800027b8",
+      "retired": 68,
+      "cycles_by_last_retired_pc": 72,
+      "branch_mispredict": 0,
+      "jalr_redirect": 2,
+      "load_use_stall": 0,
+      "entry_retired": 4,
+      "retired_fraction": 9.233309435355971e-05,
+      "attributed_cycle_fraction": 8.580806166739365e-05
+    },
+    {
+      "function": "iterate",
+      "address": "800015b4",
+      "retired": 38,
+      "cycles_by_last_retired_pc": 48,
+      "branch_mispredict": 1,
+      "jalr_redirect": 4,
+      "load_use_stall": 0,
+      "entry_retired": 1,
+      "retired_fraction": 5.159790566816572e-05,
+      "attributed_cycle_fraction": 5.72053744449291e-05
+    },
+    {
+      "function": "main",
+      "address": "80001694",
+      "retired": 5,
+      "cycles_by_last_retired_pc": 9,
+      "branch_mispredict": 0,
+      "jalr_redirect": 2,
+      "load_use_stall": 0,
+      "entry_retired": 0,
+      "retired_fraction": 6.789198114232332e-06,
+      "attributed_cycle_fraction": 1.0726007708424206e-05
+    },
+    {
+      "function": "start_time",
+      "address": "80000848",
+      "retired": 3,
+      "cycles_by_last_retired_pc": 3,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0,
+      "entry_retired": 0,
+      "retired_fraction": 4.073518868539399e-06,
+      "attributed_cycle_fraction": 3.575335902808069e-06
+    }
+  ],
+  "hottest_pcs": [
+    {
+      "pc": "80006948",
+      "function": "__mulsi3",
+      "retired": 72448,
+      "cycles_by_last_retired_pc": 128380,
+      "branch_mispredict": 27966,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80006958",
+      "function": "__mulsi3",
+      "retired": 72448,
+      "cycles_by_last_retired_pc": 89440,
+      "branch_mispredict": 8496,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80006944",
+      "function": "__mulsi3",
+      "retired": 72448,
+      "cycles_by_last_retired_pc": 72448,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80006950",
+      "function": "__mulsi3",
+      "retired": 72448,
+      "cycles_by_last_retired_pc": 72448,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80006954",
+      "function": "__mulsi3",
+      "retired": 72448,
+      "cycles_by_last_retired_pc": 72448,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "8000694c",
+      "function": "__mulsi3",
+      "retired": 41996,
+      "cycles_by_last_retired_pc": 41996,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "8000693c",
+      "function": "__mulsi3",
+      "retired": 9396,
+      "cycles_by_last_retired_pc": 9396,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80006940",
+      "function": "__mulsi3",
+      "retired": 9396,
+      "cycles_by_last_retired_pc": 9396,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "8000695c",
+      "function": "__mulsi3",
+      "retired": 9396,
+      "cycles_by_last_retired_pc": 9396,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80000d94",
+      "function": "core_bench_list",
+      "retired": 6120,
+      "cycles_by_last_retired_pc": 6616,
+      "branch_mispredict": 248,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80000d88",
+      "function": "core_bench_list",
+      "retired": 6120,
+      "cycles_by_last_retired_pc": 6120,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80000d8c",
+      "function": "core_bench_list",
+      "retired": 6120,
+      "cycles_by_last_retired_pc": 6120,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80000d90",
+      "function": "core_bench_list",
+      "retired": 6120,
+      "cycles_by_last_retired_pc": 6120,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80000d84",
+      "function": "core_bench_list",
+      "retired": 5916,
+      "cycles_by_last_retired_pc": 5916,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80000d70",
+      "function": "core_bench_list",
+      "retired": 2895,
+      "cycles_by_last_retired_pc": 5790,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 2895
+    },
+    {
+      "pc": "80000d74",
+      "function": "core_bench_list",
+      "retired": 2895,
+      "cycles_by_last_retired_pc": 5790,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 2895
+    },
+    {
+      "pc": "80000d68",
+      "function": "core_bench_list",
+      "retired": 2887,
+      "cycles_by_last_retired_pc": 5774,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 2887
+    },
+    {
+      "pc": "80000e28",
+      "function": "core_bench_list",
+      "retired": 2791,
+      "cycles_by_last_retired_pc": 5582,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 2791
+    },
+    {
+      "pc": "80000e2c",
+      "function": "core_bench_list",
+      "retired": 2791,
+      "cycles_by_last_retired_pc": 5582,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 2791
+    },
+    {
+      "pc": "80000e34",
+      "function": "core_bench_list",
+      "retired": 2778,
+      "cycles_by_last_retired_pc": 5556,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 2778
+    },
+    {
+      "pc": "800025fc",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 3928,
+      "branch_mispredict": 506,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "800024a8",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 3710,
+      "branch_mispredict": 397,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80000d6c",
+      "function": "core_bench_list",
+      "retired": 2887,
+      "cycles_by_last_retired_pc": 3075,
+      "branch_mispredict": 94,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80000e38",
+      "function": "core_bench_list",
+      "retired": 2778,
+      "cycles_by_last_retired_pc": 2986,
+      "branch_mispredict": 104,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80000d78",
+      "function": "core_bench_list",
+      "retired": 2895,
+      "cycles_by_last_retired_pc": 2941,
+      "branch_mispredict": 23,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "8000249c",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2920,
+      "branch_mispredict": 0,
+      "jalr_redirect": 2,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "800025d8",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2920,
+      "branch_mispredict": 0,
+      "jalr_redirect": 2,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "800025f0",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2918,
+      "branch_mispredict": 0,
+      "jalr_redirect": 1,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80002488",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2916,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "8000248c",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2916,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80002490",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2916,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80002494",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2916,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "80002498",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2916,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "800024a0",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2916,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "800024a4",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2916,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "800025c4",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2916,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "800025c8",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2916,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "800025cc",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2916,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "800025d0",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2916,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    },
+    {
+      "pc": "800025d4",
+      "function": "matrix_test",
+      "retired": 2916,
+      "cycles_by_last_retired_pc": 2916,
+      "branch_mispredict": 0,
+      "jalr_redirect": 0,
+      "load_use_stall": 0
+    }
+  ],
+  "notes": [
+    "Window equals hardware timer: excludes start-store edge, includes stop-store edge.",
+    "Retired counts WB-valid each clock, including stores and branches. At most a few boundary pipeline instructions straddle the software timed region.",
+    "EX branch/JALR events and load-use stalls are sampled in the same window; these are overlapping event categories, not additive measured execution times.",
+    "cycles_by_last_retired_pc assigns every WB bubble to the last retired PC. Useful leaf-function time attribution; not instruction latency or exclusive pipeline occupancy.",
+    "One iteration retains the official below-10-second rejection, so normalized numbers are estimates, not formal scores.",
+    "Same production v2 RTL, one-iteration firmware, accelerated UART outside the timed region."
+  ]
+}

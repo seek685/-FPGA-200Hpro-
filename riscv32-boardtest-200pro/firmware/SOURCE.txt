@@ -1,0 +1,24 @@
+Official EEMBC CoreMark algorithm files and LICENSE.md are copied without edits
+from commit 1f483d5b8316753a742cbf5590caf5bd0a4e4777, as saved in
+D:\0-contest\riscv32-performance\tests\coremark.
+Repository: https://github.com/eembc/coremark
+
+The board-specific files outside coremark/ are a new bare-metal port.
+The algorithm C files are not changed by this port.
+
+ROM: 32 KiB at 0x80000000, instruction combinational read, data read one cycle.
+RAM: 64 KiB at 0x80100000, one-cycle read with byte writes.
+UART: TX 0x80200100, status 0x80200104, bit 0 busy (including pending data).
+Timer: write 1 to 0x80200070 to clear/start; write 0 to freeze;
+       read 32-bit CPU cycles from 0x80200050.
+       read sticky overflow flag from 0x80200054 bit 0; start clears it.
+
+Default 3000 iterations should run about 20.9 seconds at 120 MHz using the
+previous 835113-cycle-per-iteration simulation estimate. Timing is measured on
+hardware rather than replaced by that estimate. The 32-bit timer can measure
+35.79 seconds at 120 MHz, or 28.63 seconds at 150 MHz. Any timer overflow makes
+get_time() return zero, forcing the official duration check to fail. The port
+also prints "TIMER OVERFLOW: INVALID RESULT" and suppresses CoreMark/MHz.
+The unmodified official report rejects durations below 10 seconds.
+An ITERATIONS=1 build is deliberately invalid as a formal CoreMark score and
+exists only for simulation, UART, and CRC smoke tests.

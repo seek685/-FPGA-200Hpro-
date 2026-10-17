@@ -1,0 +1,23 @@
+Reading pref.tcl
+
+# 2020.1
+
+# vsim -c -onfinish stop -l transcript.log work.tb_uart_nominal "+COREMARK=0" -do "onbreak {quit -code 1}; onerror {quit -code 1}; run -all; quit -code 0" 
+# Start time: 14:09:31 on Oct 17,2026
+# Loading sv_std.std
+# Loading work.tb_uart_nominal
+# Loading work.uart_tx
+# Loading work.serial_uart_monitor
+# onbreak {quit -code 1}
+#  Warning: onbreak command for use within macro
+#  onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  run -all
+# PASS tb_uart_nominal divisor=1041 uart_bytes=4
+# ** Note: $finish    : D:/0-contest/riscv32-boardtest-200pro/tests/tb_uart_nominal.sv(31)
+#    Time: 416505 ns  Iteration: 1  Instance: /tb_uart_nominal
+# Break in Module tb_uart_nominal at D:/0-contest/riscv32-boardtest-200pro/tests/tb_uart_nominal.sv line 31
+# Stopped at D:/0-contest/riscv32-boardtest-200pro/tests/tb_uart_nominal.sv line 31
+#  quit -code 0
+# End time: 14:09:32 on Oct 17,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0

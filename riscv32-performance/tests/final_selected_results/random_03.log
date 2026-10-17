@@ -1,0 +1,34 @@
+Reading pref.tcl
+
+# 2020.1
+
+# vsim -c work.tb_cpu_regression "+IMEM=D:/0-contest/riscv32-performance/tests/final_selected_results/random_03.hex" "+DMEM=D:/0-contest/riscv32-performance/tests/final_selected_results/data.hex" "+TRACE=D:/0-contest/riscv32-performance/tests/final_selected_results/random_03.trace" -do "onerror {quit -code 1}; onbreak {quit -code 1}; run -all; quit -code 0" 
+# Start time: 10:29:18 on Oct 17,2026
+# Loading sv_std.std
+# Loading work.tb_cpu_regression
+# Loading work.myCPU
+# Loading work.pc
+# Loading work.alu
+# Loading work.ctrl
+# Loading work.control
+# Loading work.alu_decoder
+# Loading work.regfile
+# Loading work.immgen
+# Loading work.branch_unit
+# Loading work.if_id
+# Loading work.id_ex
+# Loading work.ex_mem
+# Loading work.mem_wb
+# Loading work.forwarding
+# Loading work.hazard_detection
+# Loading work.branch_predictor
+# onerror {quit -code 1}
+#  Warning: onerror command for use within macro
+#  onbreak {quit -code 1}
+#  Warning: onbreak command for use within macro
+#  run -all
+# RESULT PASS cycles=1620 retired=1461 stalls=3 redirects=76 stores=160 loads=159 branches=155
+# ** Note: $finish    : D:/0-contest/riscv32-performance/tests/tb_cpu_regression.sv(198)
+#    Time: 16245 ns  Iteration: 1  Instance: /tb_cpu_regression
+# End time: 10:29:18 on Oct 17,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0

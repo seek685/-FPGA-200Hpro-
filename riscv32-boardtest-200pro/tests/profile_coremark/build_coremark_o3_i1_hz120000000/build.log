@@ -1,0 +1,36 @@
+In file included from D:\0-contest\riscv32-boardtest-200pro\firmware\coremark/coremark.h:38,
+                 from D:\0-contest\riscv32-boardtest-200pro\firmware\core_portme.c:1:
+D:\0-contest\riscv32-boardtest-200pro\firmware/core_portme.h:8:9: warning: 'COMPILER_FLAGS' redefined
+    8 | #define COMPILER_FLAGS "-O2 -march=rv32i -mabi=ilp32 -mno-relax -msmall-data-limit=0"
+      |         ^~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition
+In file included from D:\0-contest\riscv32-boardtest-200pro\firmware\coremark\coremark.h:38,
+                 from D:\0-contest\riscv32-boardtest-200pro\firmware\coremark\core_list_join.c:19:
+D:\0-contest\riscv32-boardtest-200pro\firmware/core_portme.h:8:9: warning: 'COMPILER_FLAGS' redefined
+    8 | #define COMPILER_FLAGS "-O2 -march=rv32i -mabi=ilp32 -mno-relax -msmall-data-limit=0"
+      |         ^~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition
+In file included from D:\0-contest\riscv32-boardtest-200pro\firmware\coremark\coremark.h:38,
+                 from D:\0-contest\riscv32-boardtest-200pro\firmware\coremark\core_main.c:23:
+D:\0-contest\riscv32-boardtest-200pro\firmware/core_portme.h:8:9: warning: 'COMPILER_FLAGS' redefined
+    8 | #define COMPILER_FLAGS "-O2 -march=rv32i -mabi=ilp32 -mno-relax -msmall-data-limit=0"
+      |         ^~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition
+In file included from D:\0-contest\riscv32-boardtest-200pro\firmware\coremark\coremark.h:38,
+                 from D:\0-contest\riscv32-boardtest-200pro\firmware\coremark\core_matrix.c:19:
+D:\0-contest\riscv32-boardtest-200pro\firmware/core_portme.h:8:9: warning: 'COMPILER_FLAGS' redefined
+    8 | #define COMPILER_FLAGS "-O2 -march=rv32i -mabi=ilp32 -mno-relax -msmall-data-limit=0"
+      |         ^~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition
+In file included from D:\0-contest\riscv32-boardtest-200pro\firmware\coremark\coremark.h:38,
+                 from D:\0-contest\riscv32-boardtest-200pro\firmware\coremark\core_state.c:19:
+D:\0-contest\riscv32-boardtest-200pro\firmware/core_portme.h:8:9: warning: 'COMPILER_FLAGS' redefined
+    8 | #define COMPILER_FLAGS "-O2 -march=rv32i -mabi=ilp32 -mno-relax -msmall-data-limit=0"
+      |         ^~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition
+In file included from D:\0-contest\riscv32-boardtest-200pro\firmware\coremark\coremark.h:38,
+                 from D:\0-contest\riscv32-boardtest-200pro\firmware\coremark\core_util.c:19:
+D:\0-contest\riscv32-boardtest-200pro\firmware/core_portme.h:8:9: warning: 'COMPILER_FLAGS' redefined
+    8 | #define COMPILER_FLAGS "-O2 -march=rv32i -mabi=ilp32 -mno-relax -msmall-data-limit=0"
+      |         ^~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition

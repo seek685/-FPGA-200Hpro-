@@ -1,0 +1,136 @@
+CPU 性能优化与验证记录 — 2026-10-17
+
+交付目录：D:\0-contest\riscv32-performance
+原始目录：D:\0_FPGA\12-pipeline-cpu-branch-predictor-original-irom
+
+所有新增、修改、仿真和实现输出均位于交付目录。独立复核原始目录的 23 个
+SystemVerilog 文件，其 SHA256 与 tests\baseline_rtl 保存的原始版本全部一致。
+原始目录没有新增子目录。未修改旧学习笔记或 NPU 工程。
+证据：tests\provenance_check.json。
+
+本轮改动
+
+保留五级单发射结构和 myCPU 外部端口，改动 7 个 RTL 文件：
+
+* branch_predictor.sv：保留 4096 项两位 gshare 和 512 项 BTB，增加 16 项返回
+  地址栈，支持 x1/x5、嵌套调用和 coroutine。JAL 在 IF 直接算目标；JALR 优先
+  使用返回栈，其余使用 BTB。只让条件分支训练方向表和推进历史。
+  返回栈只接受 EX 已确认指令更新，并向 IF 旁路当拍 push/pop，避免错误路径
+  调用污染栈。BTB/PHT 依赖 FPGA 配置初始化，软复位保留训练；EX 校验错误目标。
+* myCPU.sv：JAL/JALR 仅在预测错误时恢复；JALR 使用独立目标加法器，避开通用
+  ALU 选择链。增加 MEM 加载结果到 EX 存储数据的专用旁路，并正确处理分支历史
+  恢复优先级。PC 仍保留重定向优先于停顿的原有保护。
+* hazard_detection.sv：去除仅依赖 store 数据的 load-use 停顿；store 地址、
+  普通 ALU、分支和 JALR 对加载结果的依赖仍保留必要停顿。
+* if_id.sv / id_ex.sv：冲刷只取消 valid，避免恢复信号驱动宽数据通路清零。
+  全局复位仍初始化状态；寄存器写、总线写和预测训练均受有效位控制。
+* branch_unit.sv：共享相等比较，分段并行实现大小比较，缩短分支恢复组合链。
+* regfile.sv：仅将循环变量移到模块作用域，以兼容 PDS ADS 编译器。
+
+正确性验证
+
+ModelSim 最终回归 30/30 PASS：16 项定向、12 个随机种子、C kernel、CoreMark。
+独立 RV32I 解释模型逐条检查 PC、写回结果和物理存储事务，并比较最终内存。
+总计 828,420 条退休指令；30 份新旧架构 trace 的 SHA256 完全相同。
+覆盖错误路径存储、字节/半字符号扩展、地址依赖、x1/x5 嵌套、RAS 溢出和
+软复位后旧 BTB 目标变成真实 store 的情况。逐周期检查 stall 与 flush 不共存。
+
+预测器单元测试：118 项检查通过。
+分支比较器单元测试：805,408 项检查通过。
+实际 perip_bridge + dram_driver 集成仿真：原始版、优化版均通过。
+集成仿真仅用同步读、字节写的行为模型代替厂商 BRAM；其余桥接 RTL 使用实码。
+检查 52 次加载、28 次存储、256 个最终 BRAM 字和 32 个寄存器，错误路径存储被抑制。
+
+证据：tests\final_selected_results\summary.json、tests\comparison_final.json、
+tests\comparison_cross_checked.json、tests\memory_path_summary.txt。
+最终源冻结：tests\final_selected_rtl_sha256.json（23 文件）。
+
+同一程序、同一时钟下的周期比较
+
+测试                         原始版       优化版       周期减少
+CoreMark 计时区间             883,977      835,113      5.53%
+CoreMark 含启动与结束         928,519      878,605      5.38%
+C kernel                      35,212       33,600      4.58%
+调用返回专项                     838          537     35.92%
+两调用点共享叶函数             1,638        1,037     36.69%
+x1/x5 嵌套调用                 1,158          837     27.72%
+load -> store 专项                42           37     11.90%
+实际访存桥接                    126          105     16.67%
+普通 ALU                        265          265      0.00%
+条件分支循环                    637          637      0.00%
+
+周期减少率 = 1 - 优化版周期 / 原始版周期。它与吞吐提升百分比不同。
+12 组随机程序周期减少 7.08%—9.42%；本组测试没有周期退化用例。
+
+CoreMark 使用 EEMBC 官方算法源码，commit：
+1f483d5b8316753a742cbf5590caf5bd0a4e4777。
+编译器：GCC 15.2，-march=rv32i -mabi=ilp32 -O2，裸机移植。
+.text 为 12,572 字节，小于原工程 16 KiB IROM；.rodata + .data 为 1,988 字节。
+seed/list/matrix/state/final CRC：e9f5 / e714 / 1fd7 / 8e3a / e714，均正确。
+这是单迭代 CRC 与周期对照，未达到正式 CoreMark 至少 10 秒的要求，不能作为
+比赛 CoreMark 分数、CoreMark/MHz 或板卡性能实测。裸机端保留该无效评分条件。
+
+PDS 实现结果
+
+工具：PDS 2022.2-SP6.1 ADS；器件：PG2L200H-6 FBB676。
+对比使用相同器件、6.667 ns（约 150 MHz）约束、默认单次布局布线。
+最终交付选择 scripts\timing\final_rev3_pds 已实现的精确 RTL 版本。
+
+路由后指标                  原始版       最终交付
+总 LUT                       2,492        2,715
+FF                           1,622        1,633
+LUTRAM                         624          640
+Setup WNS                    +0.274 ns    +0.288 ns
+Slow hold 最差余量            +0.149 ns    +0.144 ns
+Fast hold 最差余量            +0.103 ns    +0.100 ns
+
+LUTRAM 已包含在总 LUT 中，不能再次相加。总 LUT 增加 223（8.95%），FF 增加 11。
+两版均满足约 150 MHz 的纯核内部 setup/hold 约束，尚无显著提频证据。
+最终 setup 首关键路径为 PC -> BTB 标签读取与匹配 -> next_pc -> PC。
+
+另测 rev4 简化 PC 停顿使能，周期相同且少 17 LUT/5 FF，但路由后 setup 余量
+为 +0.180 ns。考虑用户重视性能和稳定性，最终选取余量较大的 rev3；rev4 结果
+作为对照保留，不是当前根目录 RTL。单次布线结果仍有布局波动，不能视作最优上限。
+
+这是独立 CPU 的实现：自动分配 IO，仅约束 CPU 时钟，未设数据输入/输出延迟，
+不包含真实 IROM、BRAM、外设顶层、NPU 或共享互连。报告中的内部周期估计不能
+视为 200Pro 整板 Fmax，尤其不能覆盖新增访存旁路跨越的实际 BRAM/桥接路径。
+
+本版优先同频绝对吞吐，并非所有比赛指标同时最优。按本次 CoreMark 计时周期和
+总 LUT 粗略归一，同频性能/LUT 比原版约下降 2.84%；它不是正式 CoreMark/LUT
+分数。比赛若更看重资源效率，应结合实际评分权重选择，而不能只看周期降低。
+
+证据：scripts\timing\pds_comparison.json；
+scripts\timing\baseline_pnr_pds\report_timing\myCPU.rtr；
+scripts\timing\final_rev3_pds\report_timing\myCPU.rtr；
+scripts\timing\final_rev3_pds\place_route\myCPU.prr；
+scripts\timing\final_rev3_pds\selected_source_check.json。
+
+复现命令（PowerShell，在交付目录执行）
+
+Set-Location 'D:\0-contest\riscv32-performance'
+$taskPython = 'C:\Users\111\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
+& $taskPython .\tests\run_cpu_regression.py --core .\tests\baseline_rtl --output .\tests\reproduce_baseline --seeds 12 --c-kernel --coremark
+& $taskPython .\tests\run_cpu_regression.py --output .\tests\reproduce_final --seeds 12 --c-kernel --coremark
+& $taskPython .\tests\compare_cpu_regressions.py --baseline .\tests\reproduce_baseline --optimized .\tests\reproduce_final --output .\tests\reproduce_comparison.json
+& .\tests\run_branch_predictor.ps1
+& .\tests\run_branch_unit.ps1
+& .\tests\run_memory_path.ps1
+& .\scripts\timing\run_core_timing.ps1 -Tool Pds -SourceDir .\tests\baseline_rtl -Label baseline_reproduce
+& .\scripts\timing\run_core_timing.ps1 -Tool Pds -SourceDir . -Label final_reproduce
+
+测试脚本默认使用本机 ModelSim 与 RISC-V GCC，均可查看脚本参数调整路径。
+PDS 同时只运行一个实现任务，Label 不能重复，避免覆盖源冻结和旧结果。
+
+使用边界与后续衔接
+
+本轮交付是 CPU RTL 性能升级，尚未接入 NPU，也未生成或下载 200Pro 整板位流。
+原顶层 top.sv / student_top.sv 随源保留，仍引用原工程 PLL/IROM/BRAM IP；它们
+不是已经迁移完成的 200Pro 顶层。纯核 PDS 脚本以 myCPU 为顶层。
+当前取指需要组合读，数据接口需要固定一拍响应。对接共享 DDR、仲裁总线或
+可变延迟 NPU 互连时，必须补访存握手，并重新验证桥接和时序；不能直接套接。
+新增 load -> store 旁路跨过数据返回边界，整板实现需要包含真实 BRAM/桥接路径。
+
+剩余主要性能限制是 PC -> BTB 读取/标签匹配 -> next_pc 路径、连续嵌套返回、
+多目标间接跳转及普通 load-use 停顿。返回栈本轮采用 EX 确认更新，避免引入
+投机栈回滚的复杂度。完整 Cache、异常/中断和 NPU 异构调度不在本轮改动中。

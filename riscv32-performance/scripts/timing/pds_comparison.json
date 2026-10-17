@@ -1,0 +1,120 @@
+{
+  "limitations": [
+    "Independent CPU with normal I/O insertion and automatically placed pads; no memory or NPU logic.",
+    "Only the 6.667 ns CPU clock is constrained; data input/output delays are not specified.",
+    "The reported paths are internal sequential paths. Results are not 200Pro board timing signoff or measured Fmax.",
+    "Each version uses one default place-and-route run; no multiple-seed search was performed.",
+    "routed_lut is the total LUT count from the PDS module resource table and already includes routed_lutram. routed_ff is the same table FF count.",
+    "Original RTL is frozen by SHA256. ADS-only copies lower for(int ...) variables into equivalent module integers."
+  ],
+  "results": [
+    {
+      "label": "baseline_pnr",
+      "device": "PG2L200H-6 FBB676",
+      "tool": "PDS 2022.2-SP6.1 ADS",
+      "synthesis_lut": 2471,
+      "synthesis_ff": 1618,
+      "routed_lut": 2492,
+      "routed_ff": 1622,
+      "routed_lutram": 624,
+      "synthesis": {
+        "requested_period_ns": 6.667,
+        "estimated_period_ns": 6.473,
+        "setup_wns_ns": 0.194,
+        "slow_hold_whs_ns": 0.496,
+        "fast_hold_whs_ns": null,
+        "first_path_start": "u_mem_wb/out_rd[0]/CLK (GTP_DFF_R)",
+        "first_path_end": "u_id_ex/out_MemtoReg[0]/R (GTP_DFF_R)",
+        "first_path_logic_levels": 10,
+        "first_path_logic_delay_ns": 1.581,
+        "first_path_route_delay_ns": 4.598
+      },
+      "routed": {
+        "requested_period_ns": 6.667,
+        "estimated_period_ns": 6.393,
+        "setup_wns_ns": 0.274,
+        "slow_hold_whs_ns": 0.149,
+        "fast_hold_whs_ns": 0.103,
+        "first_path_start": "u_pc/pc[2]/opit_0_AQ_perm/CLK",
+        "first_path_end": "u_pc/pc[25]/opit_0_L7Q_perm/A3",
+        "first_path_logic_levels": 7,
+        "first_path_logic_delay_ns": 1.901,
+        "first_path_route_delay_ns": 4.144
+      },
+      "source_manifest": "D:\\0-contest\\riscv32-performance\\scripts\\timing\\baseline_pnr_pds\\source_manifest.json",
+      "routed_report": "D:\\0-contest\\riscv32-performance\\scripts\\timing\\baseline_pnr_pds\\report_timing\\myCPU.rtr"
+    },
+    {
+      "label": "final_rev3",
+      "device": "PG2L200H-6 FBB676",
+      "tool": "PDS 2022.2-SP6.1 ADS",
+      "synthesis_lut": 2723,
+      "synthesis_ff": 1627,
+      "routed_lut": 2715,
+      "routed_ff": 1633,
+      "routed_lutram": 640,
+      "synthesis": {
+        "requested_period_ns": 6.667,
+        "estimated_period_ns": 6.643,
+        "setup_wns_ns": 0.024,
+        "slow_hold_whs_ns": 0.458,
+        "fast_hold_whs_ns": null,
+        "first_path_start": "u_mem_wb/out_rd[0]/CLK (GTP_DFF_R)",
+        "first_path_end": "u_pc/pc[0]/CE (GTP_DFF_CE)",
+        "first_path_logic_levels": 9,
+        "first_path_logic_delay_ns": 1.468,
+        "first_path_route_delay_ns": 4.899
+      },
+      "routed": {
+        "requested_period_ns": 6.667,
+        "estimated_period_ns": 6.379,
+        "setup_wns_ns": 0.288,
+        "slow_hold_whs_ns": 0.144,
+        "fast_hold_whs_ns": 0.1,
+        "first_path_start": "u_pc/pc[3]/opit_0_AQ_perm/CLK",
+        "first_path_end": "u_pc/pc[7]/opit_0_AQ_perm/I4",
+        "first_path_logic_levels": 8,
+        "first_path_logic_delay_ns": 2.292,
+        "first_path_route_delay_ns": 3.831
+      },
+      "source_manifest": "D:\\0-contest\\riscv32-performance\\scripts\\timing\\final_rev3_pds\\source_manifest.json",
+      "routed_report": "D:\\0-contest\\riscv32-performance\\scripts\\timing\\final_rev3_pds\\report_timing\\myCPU.rtr"
+    },
+    {
+      "label": "final_rev4",
+      "device": "PG2L200H-6 FBB676",
+      "tool": "PDS 2022.2-SP6.1 ADS",
+      "synthesis_lut": 2716,
+      "synthesis_ff": 1627,
+      "routed_lut": 2698,
+      "routed_ff": 1628,
+      "routed_lutram": 640,
+      "synthesis": {
+        "requested_period_ns": 6.667,
+        "estimated_period_ns": 6.567,
+        "setup_wns_ns": 0.1,
+        "slow_hold_whs_ns": 0.458,
+        "fast_hold_whs_ns": null,
+        "first_path_start": "u_mem_wb/out_rd[0]/CLK (GTP_DFF_R)",
+        "first_path_end": "u_branch_predictor/ghr_q[0]/CE (GTP_DFF_RE)",
+        "first_path_logic_levels": 9,
+        "first_path_logic_delay_ns": 1.468,
+        "first_path_route_delay_ns": 4.823
+      },
+      "routed": {
+        "requested_period_ns": 6.667,
+        "estimated_period_ns": 6.487,
+        "setup_wns_ns": 0.18,
+        "slow_hold_whs_ns": 0.144,
+        "fast_hold_whs_ns": 0.1,
+        "first_path_start": "u_mem_wb/out_rd[4]/opit_0/CLK",
+        "first_path_end": "u_branch_predictor/btb_valid_q_1/ram128x1d/WE",
+        "first_path_logic_levels": 8,
+        "first_path_logic_delay_ns": 1.801,
+        "first_path_route_delay_ns": 4.578
+      },
+      "source_manifest": "D:\\0-contest\\riscv32-performance\\scripts\\timing\\final_rev4_pds\\source_manifest.json",
+      "routed_report": "D:\\0-contest\\riscv32-performance\\scripts\\timing\\final_rev4_pds\\report_timing\\myCPU.rtr"
+    }
+  ]
+}
